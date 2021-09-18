@@ -2,16 +2,16 @@
 
 '''
 
-10) Open a file
-    catch file name
+10) Open  all the files of a directory
+    for each file name ; catch filename
 
-15) catch value of <diagram>
+15) catch value of <diagram> ---> non plus necessaire
 
 20) catch all interesting attributes of mxCell :
     - id, value, id_of_parent, style, source, target
 
 30) put all this in a dictionary :
-    {inferedtype : {id : [value, id_of_parent, style, source, target]}} 
+    {id : [inferedtype, genereatedIdforMap, value, id_of_parent, style, source, target]}} 
 
 inferedtype :
        swimlane : {id : [style, value, id_of_parent]} --> style=swimlane
@@ -22,31 +22,50 @@ inferedtype :
        process : {id : [style, value, id_of_parent]}--> style=shape=process
        group : {id : [style, value, id_of_parent]}--> style=group
 
-40) first task of the restitution :
+40) first task of the restitution : generate 2 CSV ready to import into MAP
 - link swimlanes and activities
 
-41) 
+goal : 
+
+first CSV : artefacts
+------------
+csv fields : key;name;type;businessID;orderNumber;description;serviceLevelAgreement;frequency;activityType;periodicity;platform;contractScope
+
+case of processes :
+key;name;type;
+MACRO_BUSINESS_PROCESS:{filename}{id};value;MacroBusinessProcess;
+
+case of applications :
+key;name;type;
+APPLICATION:{value};value;Application 
 
 
-for each entry of the dictionary append a line in a file with
-- write the name of the file
-- write the name of the diagram
-- write the current entry and check it as analysed
-- write all the values of entries which has as parent the current entry and check it analysed
+second csv : links
+--------------------
+parentKey;childKey;relationType;metaX
+
+APPLICATION:{id};MACRO_BUSINESS_PROCESS:{id};serves
+
+50) generate a graphml that show the hierarchy of the content
+
+first pass : create all the nodes
+second pass : create the hierarchy between the artefacts. if the Cell has no parents : attach to the name of the file
+                which is the top of the hierarchy
+                --> hierarchy made by linking nodes with edges (labels "contains")
+thrid pass : create link between activities by creating edges  (labels "is before")
 
 
 '''
-
-
-
 import os
 import sys
 import glob
 import argparse
 import re
+import xml.etree.ElementTree as ET
+import pyyed
 import filecmp
-import statistics
-
+import csv
+import uuid
 # Create the parser
 my_parser = argparse.ArgumentParser(description='analyse drawio files with BPMN content')
 
@@ -72,202 +91,154 @@ if not os.path.isdir(input_path):
     print('The path specified does not exist')
     sys.exit()
 
-# variables and functions of the program
-dicOfFilesWithDetails = {}
-dicOfIdenticalFiles = {}
-booleandigitInName = lambda d : d != None
-booleanunderscoreInName = lambda u : u > 0
+
+listOfFiles = []
+dictOfFilesAndDetails = {}
 
 def getfiles(input_path, extension):
     '''
-        returns the files of the specified dir that have the specified extension
+        parse all the files of the specified dir that have the specified extension
+        for each file, place its name in a dictionary with an empty dictionary for the value
+                       (that will get the details later )
+        dicOfFiles = {filename : {emptyDictionary}}
     '''
-    dic = {}
-    alreadyChecked = False
+    listOfFiles = []
+
     for file in (glob.glob(input_path + "*." + extension,recursive=False)):
-        file_stats = os.stat(file)
-        size = file_stats.st_size
-        #get just the name the file without the path nor the extension
-        filename = file[file.rfind(os.path.sep)+1:-(len(file)-(file.rfind('.')))]
-        # get the prefix of the file
-        # what is the prefix ?
-        #  - the part before
-        #    - the last _ or
-        #    - the first digit
-        bu = booleanunderscoreInName(filename.rfind('_'))
-        bd = booleandigitInName(re.search(r"\d",filename))
-        underscoreInName = filename.rfind('_')
-        digitInName = re.search(r"\d",filename)
-        
-        if (bu): whereToCut = underscoreInName
-        if (not bu and bd): whereToCut = digitInName.start()
-        if (bu or bd):
-            toCut = True
-        else:
-            toCut = False
+        listOfFiles.append(file)
+    return listOfFiles
 
-        if (toCut):
-            prefix = filename[0:whereToCut]
-            suffix = filename[whereToCut:]
-        else:
-            prefix = filename
-            suffix = filename
-        # finally add all the information in a dictionary
-        dic[file] = filename, prefix, suffix, size, alreadyChecked
-    return dic
+def appendMapFiles(dictionary):
+    pass
 
-def writeMainDictionary(output):
+def appendYedFile(what, dictionary):
     '''
-    Writes the details of all the files that are to be inspected
+        generate the yed file in 3 pass
+        1) nodes creation
+        2) hierachy creation
+        3) edge creation
     '''
-    analysis_output = open(output, 'w+')
-    analysis_output.write("fullpath;filename;prefix;suffix;size;alreadyChecked\n")
-    for key, value in dicOfFilesWithDetails.items():
-        (filename, prefix, suffix, size, alreadyChecked) = value
-        analysis_output.write(str(key) + ";" + str(filename) + ";" + str(prefix) + ";" + str(suffix) + ";" + str(size) + ";" + str(alreadyChecked) + "\n")
-    analysis_output.close()
+    for  file, dictWithDetails in dictionary.items():
+        g = pyyed.Graph()
+        g.add_node(file, font_size="14", shape="rectangle3d")
+        for id, listOfDetails in dictWithDetails.items():
+            (inferedtype, generatedIdForMap, cleanvalue, parentId, style, source, target) = listOfDetails
+            if (cleanvalue is None):
+                label = ''
+            else:
+                label = cleanvalue
+            font_style = "plain"
+            font_size = "12"
+            if (what == 'yed_nodes'):
+                if (source is None):
+                    if (inferedtype == 'generic'):
+                        label = label+"\n---\nstyle="+style
+                    if (inferedtype == "swimlane"):
+                        font_style="bold"
+                        font_size = "14"
+                    g.add_node(id, label=label, font_size=font_size, font_style=font_style)
+            if (what == 'yed_hierarchy'):
+                if (source is None):
+                    if (parentId is not None ):
+                        src = parentId
+                        tgt = id
+                    else:
+                        src = file
+                        tgt = id
+                    g.add_edge(src, id, label="contains", font_size=font_size, font_style=font_style)
+            if (what == 'yed_edges'):
+                if (source is not None):
+                    g.add_edge(source, target, label="is before", font_size=font_size, font_style=font_style)
+        with open(file+".graphml", 'w') as fp:
+            fp.write(g.get_graph())
 
-def filterTheDict(dictObj, mainKey, newList, toBeComparedTo, counter):
-    # Iterate over all the items in dictionary
-    for (key, value) in dictObj.items():
-        # Check if item satisfies the given condition then add to new dict
-        (filename, prefix, suffix, size, alreadyChecked) = value
-        if (not alreadyChecked and size == toBeComparedTo):
-            if (filecmp.cmp(mainKey, key, shallow=False)):
-                dicOfFilesWithDetails[key] = filename, prefix, suffix, size, True # don't check again that file
-                newList.append(key)
-                counter +=1
-    return newList, counter
-
-def groupIdenticalFiles(output):
-    groupNumber = 1
-    newList = list()
-    listToWrite = list()
-    nbOfFiles = 1
-    analysis_output_groups = open(output, 'w+')
-    analysis_output_groups.write("group;file1;file2;file3;file4;file5;file6;file7;file8;file9;file10;file11;file12;file13;file14;file15;file16;file17;file18;file19;file20\n")
-    for key, value in dicOfFilesWithDetails.items():
-        (filename, prefix, suffix, size, alreadyChecked) = value
-        if not alreadyChecked:
-            dicOfFilesWithDetails[key] = filename, prefix, suffix, size, True # That key won't be examined later
-            del listToWrite[:]
-            del newList[:]
-            nbOfFiles = 1
-            newList.append(key) # initialize the list that will contains all the files with the same size
-            listToWrite, nbOfFiles = filterTheDict(dicOfFilesWithDetails, key, newList, size, nbOfFiles)
-            analysis_output_groups.write(f'{groupNumber}')
-            for p in listToWrite:
-                analysis_output_groups.write(f';{p}')
-            analysis_output_groups.write(f';n{nbOfFiles};s{size}\n')
-            groupNumber += 1
-    analysis_output_groups.close()
-
-def removeComments(extraExtension):
+def getInferedType(style, has_a_source):
     '''
-        parse the files and strip them from the comments
-        purpose : see if the result is different
-        comments markers : # =head =cut REM
-        empty lines are also skipped
+       inferedtype :
+       swimlane : {id : [style, value, id_of_parent]} --> style=swimlane
+       activity : {id : [style, value, id_of_parent]} --> style=shape=ext or style=html=1
+       bpmnartifact : {id : [style, value, id_of_parent]}
+       edge : {id : [style, value, id_of_parent, source, destination]} -->  as a source and a target
+       note : {id : [style, value, id_of_parent]} --> style=note
+       process : {id : [style, value, id_of_parent]}--> style=shape=process
+       group : {id : [style, value, id_of_parent]}--> style=group
     '''
-    for key in dicOfFilesWithDetails:
-        analysis_write = open(f'{key}{extraExtension}', 'w+')# resulting file without the comments ("cr" means "comments removed")
-        with open(key, 'r') as analysis_read: # file in which to seek comments
-            needToReachCut = False
-            for line in analysis_read:
-                lineToWrite = True
-                if (line[0] == '\n'):
-                    lineToWrite = False
-                if (line[0:3] == 'REM' or line[0] == '#'):
-                    lineToWrite = False
-                if (line[0:5] == '=head'):
-                    lineToWrite = False
-                    needToReachCut = True
-                if (needToReachCut):
-                    lineToWrite = False
-                if (line[0:4] == '=cut'):
-                    lineToWrite = False
-                    needToReachCut = False
-                if (lineToWrite):
-                    analysis_write.write(line)
-        analysis_write.close()
+    if (style == 'swimlane'):
+        return 'swimlane'
+    elif (style == 'html=1' or style == 'shape=ext'):
+        return 'activity'
+    elif (has_a_source):
+        return 'edge'
+    elif (style == 'note'):
+        return 'note'
+    elif (style == 'shape=process'):
+        return 'process'
+    elif (style == 'group'):
+        return 'group'
+    else:
+        return 'generic'
 
-def dumpGroupContent(inputFile, extensionToRemove, pathToTest):
-    groupNumber = int()
-    filename = str()
-    filenameBeginning = int()
-    filenameEnding = int()
-    lenToremove = len(extensionToRemove) # at this point the dictionary is filled with the files without comments (with extra extension added). But one want to read the untouched file
-    with open(inputFile, 'r') as analysis_read:
-        for line in analysis_read:
-            filenameBeginning = line.find(';',0)+1 # to find the first ";"
-            groupNumber = line[0:filenameBeginning-1]
-            filenameEnding = line.find(';', 10) - lenToremove # to find the second ";" assuming starting at position 10 is enough to skip the first ";" 
-            filename=line[filenameBeginning:filenameEnding]
-            if (filename[0:2] == pathToTest[0:2]):
-                with open(filename) as toRead:
-                    text = toRead.read()
-                with open(f'{groupNumber}.txt', 'w+') as toWrite:
-                    toWrite.write(text)
-                
-def reportsOnGroups(input, output):
-    groupNumber = int()
-    nbOfFiles = int()
-    size = int()
-    whereisSize = int()
-    whereisNbOfFiles = int()
-    filenameBeginning = int()
-    toWrite = open(output, 'w+')
-    toWrite.write('group;nbOfFiles;size\n')
-    with open(input) as toRead:
-        for line in toRead:
-            if line[0] != 'g':
-                filenameBeginning = line.find(';',0)+1 # to find the first ";"
-                groupNumber = line[0:filenameBeginning-1]
-                whereisSize = line.find(';s')
-                whereisNbOfFiles = line.find(';n')
-                nbOfFiles = line[whereisNbOfFiles+2:whereisSize]
-                size = line[whereisSize+2:]
-                toWrite.write(f'{groupNumber};{nbOfFiles};{size}')
-    toWrite.close()
+def analysefiles(listOfFiles):
+    '''
+    parse the list. for each file in the list : get the details of mxCell
+    append in a dictionary {filename : {id : [inferedtype, genereatedIdForMap, value, id_of_parent, style, source, target]}}} 
+    '''
+    has_attribute = lambda mxcell, attribute : attribute in mxcell
+    # regex to clean up html tags and special character (e.g. &nbsp;)
+    cleanr = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
+    # main dict {filename : {dictwithdetails}}
+    mainDict = {}
+    for file in listOfFiles:
+        # detailsDict {id : [inferedtype, genereatedIdForMap, value, parentId, style, source, target]}} 
+        detailsDict = {}
+        listOfdetails = []
+        #get just the name the file without the path nor the extension and withoutspaces
+        trimmedFilename = file[file.rfind(os.path.sep)+1:-(len(file)-(file.rfind('.')))].replace(" ", "")
+        with open(file) as xmltoanalyse:
+            data = open(file).read()
+            # is it an xml file ?
+            if data[0:5] == '<?xml':
+                myroot = ET.fromstring(data)
+                for mxCell in myroot.iter('mxCell'):
+                    inferedtype = None
+                    generatedIdForMap = None
+                    cleanvalue = None
+                    parentId = None
+                    style = None
+                    source = None
+                    target = None
+                    styleToExamine = None
+#                    try:
+                    if 'style' in mxCell.attrib:
+                        styleToExamine = mxCell.attrib['style'].split(';')[0]
+                        ha = has_attribute(mxCell.attrib, 'source')  
+                        inferedtype = getInferedType(styleToExamine, ha)
+                    if 'id' in mxCell.attrib: generatedIdForMap = trimmedFilename+mxCell.attrib['id']
+                    if 'value' in mxCell.attrib: cleanvalue = re.sub(cleanr,'', mxCell.attrib['value'])
+                    if 'parent' in mxCell.attrib: parentId = mxCell.attrib['parent']
+                    if 'style' in mxCell.attrib: style = mxCell.attrib['style']
+                    if 'source' in mxCell.attrib: source = mxCell.attrib['source']
+                    if 'target' in mxCell.attrib: target = mxCell.attrib['target']
+                    if 'id' in mxCell.attrib:
+                        detailsDict[mxCell.attrib['id']] = inferedtype, generatedIdForMap, cleanvalue, parentId, style, source, target
+                    else:
+                        detailsDict[str(uuid.uuid4())] = inferedtype, generatedIdForMap, cleanvalue, parentId, style, source, target
+#                    except:
+#                        pass
+                mainDict[file] = detailsDict
+    return mainDict
 
- # ---- main ----
-for i in range(2):
-    extraExtension = '.cr'
+# ----------------- main ----------------
+# variables and functions of the program
+# parse all files
+listOfFiles = getfiles(input_path, extension)
 
-    if i == 0:
-        outputwriteMainDictionary = '_filesToAnalyze_untouched.txt'
-        outputgroupIdenticalFIles = '_identical_files_group.txt'
-        groupSummary = '_summary.txt'
-        currentExtension = extension
+# break down the content of all files into a dictionary
+dictOfFilesAndDetails = analysefiles(listOfFiles)
 
-    if i == 1:
-        outputwriteMainDictionary = '_filesToAnalyze_without_comments.txt'
-        outputgroupIdenticalFIles = '_identical_files_group_without_comments.txt'
-        groupSummary = '_summary_without_comments.txt'
-        dicOfFilesWithDetails.clear
-        currentExtension = extension + extraExtension
-
-    # get all the details we need about the files
-    # purpose : it's the base to browse and compare between them
-    dicOfFilesWithDetails = getfiles(input_path, currentExtension)
-
-    # write the content of the dictionary in a file in order to get an handy reference to dive into
-    writeMainDictionary(outputwriteMainDictionary)
-
-    # parse the dictionary and for each key(=file) find others keys(=file) with the same content.
-    # purpose : group them and be able to know the how many group there are
-    groupIdenticalFiles(outputgroupIdenticalFIles)
-
-    # parse the files and strip them from the comments
-    # purpose : see if the result is different
-    # comments markers : # =head =cut REM
-    if i == 0:
-        removeComments(extraExtension)
-
-    # dump once the content of the files that are identical
-    # purpose : being able to have à look at what are doint each groups of files
-    # and see (manually with your onw eyes) whare are the groups that are very similar despite being different
-    if i == 1:
-        dumpGroupContent(outputgroupIdenticalFIles, '', input_path) # to dump untouched files : extraExtension instaed of ''
-    
-    reportsOnGroups(outputgroupIdenticalFIles, groupSummary)
+# generate the files
+for what in ('yed_nodes', 'yed_hierarchy', 'yed_edges', 'map'):
+    if (what != 'map'):
+        appendYedFile(what, dictOfFilesAndDetails)
+    else:
+        appendMapFiles(dictOfFilesAndDetails)
