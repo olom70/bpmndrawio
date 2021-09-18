@@ -1,4 +1,5 @@
 # %%
+from os import replace
 from typing import Text
 import xml.etree.ElementTree as ET
 import re
@@ -253,4 +254,10 @@ if ('value' in tel):
 if ('jack' in tel):
     print('0') if len(tel['jack']) == 0 else print(1)
 tel['sape']
+'value' in tel
+
+
 # %%
+id = 
+
+  # %%

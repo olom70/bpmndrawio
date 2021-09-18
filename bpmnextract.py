@@ -118,39 +118,36 @@ def appendYedFile(what, dictionary):
         2) hierachy creation
         3) edge creation
     '''
-    for  file, dictWithDetails in dictionary.items():
-        g = pyyed.Graph()
-        g.add_node(file, font_size="14", shape="rectangle3d")
-        for id, listOfDetails in dictWithDetails.items():
-            (inferedtype, generatedIdForMap, cleanvalue, parentId, style, source, target) = listOfDetails
-            if (cleanvalue is None):
-                label = ''
-            else:
-                label = cleanvalue
-            font_style = "plain"
-            font_size = "12"
-            if (what == 'yed_nodes'):
-                if (source is None):
+    for id, listOfDetails in dictWithDetails.items():
+        (inferedtype, generatedIdForMap, cleanvalue, parentId, style, source, target) = listOfDetails
+        if (cleanvalue is None):
+            label = ''
+        else:
+            label = cleanvalue
+        font_style = "plain"
+        font_size = "12"
+        if (what == 'yed_nodes'):
+            if (source is None):
+                if (id != '0' and id != '1'):
                     if (inferedtype == 'generic'):
-                        label = label+"\n---\nstyle="+style
+                        label = label#+"\n---\nstyle="+style
                     if (inferedtype == "swimlane"):
                         font_style="bold"
                         font_size = "14"
-                    g.add_node(id, label=label, font_size=font_size, font_style=font_style)
-            if (what == 'yed_hierarchy'):
-                if (source is None):
-                    if (parentId is not None ):
-                        src = parentId
-                        tgt = id
-                    else:
-                        src = file
-                        tgt = id
-                    g.add_edge(src, id, label="contains", font_size=font_size, font_style=font_style)
-            if (what == 'yed_edges'):
-                if (source is not None):
-                    g.add_edge(source, target, label="is before", font_size=font_size, font_style=font_style)
-        with open(file+".graphml", 'w') as fp:
-            fp.write(g.get_graph())
+                        # I write a node only for swimlanes because other are harder. maybe later
+                        # so the indentation is good. To write all nodes unindent 1 time next line
+                        g.add_node(id, label=label, font_size=font_size, font_style=font_style)
+        if (what == 'yed_hierarchy'):
+            if (source is None and inferedtype == 'swimlane'):
+                if (parentId is not None and parentId != '0' and parentId != '1'):
+                    src = parentId
+                    tgt = id
+                        # I write a node only for swimlanes because other are harder. maybe later
+                        # so the indentation is good. To write all nodes unindent 1 time next line
+                    g.add_edge(src, tgt, label="contains")
+        if (what == 'yed_edges'):
+            if (source is not None):
+                g.add_edge(source, target, label="is before")
 
 def getInferedType(style, has_a_source):
     '''
@@ -208,7 +205,6 @@ def analysefiles(listOfFiles):
                     source = None
                     target = None
                     styleToExamine = None
-#                    try:
                     if 'style' in mxCell.attrib:
                         styleToExamine = mxCell.attrib['style'].split(';')[0]
                         ha = has_attribute(mxCell.attrib, 'source')  
@@ -223,8 +219,6 @@ def analysefiles(listOfFiles):
                         detailsDict[mxCell.attrib['id']] = inferedtype, generatedIdForMap, cleanvalue, parentId, style, source, target
                     else:
                         detailsDict[str(uuid.uuid4())] = inferedtype, generatedIdForMap, cleanvalue, parentId, style, source, target
-#                    except:
-#                        pass
                 mainDict[file] = detailsDict
     return mainDict
 
@@ -237,8 +231,9 @@ listOfFiles = getfiles(input_path, extension)
 dictOfFilesAndDetails = analysefiles(listOfFiles)
 
 # generate the files
-for what in ('yed_nodes', 'yed_hierarchy', 'yed_edges', 'map'):
-    if (what != 'map'):
-        appendYedFile(what, dictOfFilesAndDetails)
-    else:
-        appendMapFiles(dictOfFilesAndDetails)
+for file, dictWithDetails in dictOfFilesAndDetails.items():
+    g = pyyed.Graph()
+    #g.add_node(file, font_size="14", shape="rectangle3d")
+    for what in ('yed_nodes', 'yed_hierarchy'): #, 'yed_edges'):
+            appendYedFile(what, dictOfFilesAndDetails)
+    g.write_graph(file+'.graphml', pretty_print=True)
