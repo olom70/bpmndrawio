@@ -258,6 +258,45 @@ tel['sape']
 
 
 # %%
-id = 
+import csv
+artefactscolumns = ["key", "name", "type", "businessID", "orderNumber", "description", "serviceLevelAgreement", "frequency", "activityType", "periodicity", "platform", "contractScope"]
+relationscolums = ["parentKey" ,"childKey","relationType", "metaX"]
+with open('artefacts.csv', 'w+', newline='') as artefactscsvfile:
+    artefactswriter = csv.writer(artefactscsvfile, delimiter=';',
+                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    artefactswriter.writerow(artefactscolumns)
+
 
   # %%
+def addt(a):
+  a = a + 2
+  return a
+
+a = 1
+addt(a)
+print(a)
+
+
+# %%
+# initialise the file that will contains all the artefacts (processes & applications)
+artefactscolumns = ["key", "name", "type", "businessID", "orderNumber", "description", "serviceLevelAgreement", "frequency", "activityType", "periodicity", "platform", "contractScope"]
+with open('artefacts.csv', 'w+', newline='') as artefactscsvfile:
+    artefactswriter = csv.writer(artefactscsvfile, delimiter=';',
+                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+# initialise the file that will contains all the relations (processes & applications)
+relationscolumns = ["parentKey" ,"childKey","relationType", "metaX"]
+with open('relations.csv', 'w+', newline='') as relationscsvfile:
+    relationswriter = csv.writer(relationscsvfile, delimiter=';',
+                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+def writecsv():
+    artefactswriter.writerow(artefactscolumns)
+    relationswriter.writerow(relationscolumns)
+
+writecsv()
+# %%
+file = 'Vendre - Ventes Wholesales & Partenaires BPMN Commande web DW avec OMS (1)-process commande web sous Demandware.drawio.xml'
+filename = file[file.rfind('-')+1:-(len(file)-(file.find('.')))]
+print(filename)
+# %%

@@ -117,7 +117,81 @@ def getfiles(input_path, extension):
     return listOfFiles
 
 def appendMapFiles(dictionary):
-    pass
+    '''
+        Generate 2 files ready to import in MAP :
+        - artefacts : all the artefacts of any type to add in MAP
+        - relations : relations between the artefacts
+    '''
+    MACROBUSINESSPROCESS = 'MACRO_BUSINESS_PROCESS:'
+    APPLICATION = 'APPLICATION:'
+    MACROBUSINESSPROCESSTYPE  = 'MacroBusinessProcess'
+    APPLICATIONTYPE = 'Application'
+    # initialise the file that will contains all the artefacts (processes & applications)
+    artefactscolumns = ["key", "name", "type", "businessID", "orderNumber", "description", "serviceLevelAgreement", "frequency", "activityType", "periodicity", "platform", "contractScope"]
+    artefactscsvfile = open('artefacts.csv', 'w+', newline='')
+    artefactswriter = csv.writer(artefactscsvfile, delimiter=';',
+                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    artefactswriter.writerow(artefactscolumns)
+
+    # initialise the file that will contains all the relations (processes & applications)
+    relationscolumns = ["parentKey" ,"childKey","relationType", "metaX"]
+    relationscsvfile = open('relations.csv', 'w+', newline='')
+    relationswriter = csv.writer(relationscsvfile, delimiter=';',
+                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    relationswriter.writerow(relationscolumns)
+    # begin to fill up the files
+    for file, dictWithDetails in dictionary.items():
+        ProcessName = file[file.rfind('-')+1:-(len(file)-(file.find('.')))]
+        for id, listOfDetails in dictWithDetails.items():
+            (inferedtype, generatedIdForMap, cleanvalue, parentId, style, source, target) = listOfDetails
+            toWrite = []
+            key = ''
+            name = ''
+            type = ''
+            businessID = ''
+            ordernumber = ''
+            description = ''
+            serviceLevelAgreement = ''
+            frequency = ''
+            activityType = ''
+            periodicity = ''
+            platform = ''
+            contractScope = ''
+            if (cleanvalue is None):
+                label = ''
+            else:
+                label = cleanvalue
+            if (inferedtype == 'swimlane' and label != ''):
+                if (label.lower()[0:9] == 'processus'):
+                    key = MACROBUSINESSPROCESS+generatedIdForMap
+                    name = cleanvalue
+                    type = MACROBUSINESSPROCESSTYPE
+                    businessID = generatedIdForMap
+                    ordernumber = ''
+                    description = label
+                    serviceLevelAgreement = ''
+                    frequency = ''
+                    activityType = ''
+                    periodicity = ''
+                    platform = ''
+                    contractScope = ''
+                else: #it's an application
+                    key = APPLICATION+generatedIdForMap
+                    name = cleanvalue
+                    type = APPLICATIONTYPE
+                    businessID = ''
+                    ordernumber = ''
+                    description = label
+                    serviceLevelAgreement = ''
+                    frequency = ''
+                    activityType = ''
+                    periodicity = ''
+                    platform = ''
+                    contractScope = ''
+                toWrite = [key, name, type, businessID, ordernumber, description, serviceLevelAgreement, frequency, activityType, periodicity, platform, contractScope]
+                artefactswriter.writerow(toWrite)
+    artefactscsvfile.close()
+    relationscsvfile.close()
 
 def appendYedFile(what, dictionary):
     '''
@@ -198,7 +272,8 @@ def analysefiles(listOfFiles):
         detailsDict = {}
         listOfdetails = []
         #get just the name the file without the path nor the extension and withoutspaces
-        trimmedFilename = file[file.rfind(os.path.sep)+1:-(len(file)-(file.rfind('.')))].replace(" ", "")
+        #trimmedFilename = file[file.rfind(os.path.sep)+1:-(len(file)-(file.rfind('.')))].replace(" ", "")
+        processName = file[file.rfind('-')+1:-(len(file)-(file.find('.')))].replace(" ", "")
         with open(file) as xmltoanalyse:
             data = open(file).read()
             # is it an xml file ?
@@ -217,7 +292,7 @@ def analysefiles(listOfFiles):
                         styleToExamine = mxCell.attrib['style'].split(';')[0]
                         ha = has_attribute(mxCell.attrib, 'source')  
                         inferedtype = getInferedType(styleToExamine, ha)
-                    if 'id' in mxCell.attrib: generatedIdForMap = trimmedFilename+mxCell.attrib['id']
+                    if 'id' in mxCell.attrib: generatedIdForMap = processName+mxCell.attrib['id']
                     if 'value' in mxCell.attrib: cleanvalue = re.sub(cleanr,'', mxCell.attrib['value'])
                     if 'parent' in mxCell.attrib: parentId = mxCell.attrib['parent']
                     if 'style' in mxCell.attrib: style = mxCell.attrib['style']
@@ -238,10 +313,13 @@ listOfFiles = getfiles(input_path, extension)
 # break down the content of all files into a dictionary
 dictOfFilesAndDetails = analysefiles(listOfFiles)
 
-# generate the files
+# generate the file for Yed (Graphml file)
 for file, dictWithDetails in dictOfFilesAndDetails.items():
     g = pyyed.Graph()
     #g.add_node(file, font_size="14", shape="rectangle3d")
     for what in ('yed_nodes', 'yed_hierarchy'): #, 'yed_edges'):
             appendYedFile(what, dictOfFilesAndDetails)
     g.write_graph(file+'.graphml', pretty_print=True)
+
+# generate the files for MAP
+appendMapFiles(dictOfFilesAndDetails)
