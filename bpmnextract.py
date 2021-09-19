@@ -25,6 +25,14 @@ inferedtype :
 40) first task of the restitution : generate 2 CSV ready to import into MAP
 - link swimlanes and activities
 
+some particularities :
+- take into account only swimlanes beginning wtih "Processus"
+- do not take into account parent id of swimlanes "Processus"
+- if a swimlane "not Processus" has its parent with a name not beginning by processus take the last part of the name of the file
+-   example : 13 - BPMN Nextail - WEB - V2-Processus Allocation de stock - Réassort Nextail Web - Génération des fichiers quotidiens.drawio.xml
+-           13 - BPMN Nextail - WEB-Processus Allocation de stock - Réassort Nextail - Intégration des Waybills.drawio.xml
+- do not take into account swimlanes with no value
+
 goal : 
 
 first CSV : artefacts
