@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile modified="2021-09-10T20:45:22.849Z" host="Electron" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/15.1.3 Chrome/89.0.4389.128 Electron/12.1.0 Safari/537.36" etag="rfKQrqumWjKA64EdHPPd" version="15.1.3" type="device">
+  <diagram id="e45bbcb4-4817-f833-fe68-a42dc8e9f8da" name="process XXXXX actuellement">
+    <mxGraphModel dx="1088" dy="968" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="5b6dd56feeb6a458-1" value="Processus Vente Wholesale en version existant / cible / etape 1 de migration" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1C75BC;strokeWidth=2;fillColor=#ECEEF7;gradientColor=none;fontSize=19;fontColor=#000000;align=center;labelBackgroundColor=none;" parent="1" vertex="1">
+          <mxGeometry x="40" y="40" width="880" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="5b6dd56feeb6a458-2" value="&lt;div style=&quot;text-align: center ; font-size: 19px&quot;&gt;&lt;span style=&quot;font-size: 19px&quot;&gt;07/05/2018&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1C75BC;strokeWidth=2;fillColor=#ECEEF7;gradientColor=none;fontSize=19;fontColor=#000000;align=center;labelBackgroundColor=none;" parent="1" vertex="1">
+          <mxGeometry x="960" y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="5b6dd56feeb6a458-3" value="&lt;p style=&quot;line-height: 120%&quot;&gt;Ce processus décrit les étapes de l’émission de la commande Wholesale à son expédition.&lt;br&gt;&lt;/p&gt;" style="text;strokeColor=#A5BA1F;fillColor=#E8EEAE;spacing=5;spacingTop=0;whiteSpace=wrap;overflow=hidden;rounded=0;fontSize=10;labelBackgroundColor=none;html=1;verticalAlign=middle;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="960" y="90" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="5b6dd56feeb6a458-24" value="Fin" style="shape=mxgraph.bpmn.shape;html=1;verticalLabelPosition=bottom;labelBackgroundColor=none;verticalAlign=top;perimeter=ellipsePerimeter;outline=end;symbol=general;fontSize=10;aspect=fixed;fillColor=#FCDEE0;strokeColor=#BE1E2D;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="1579" y="940" width="40" height="40" as="geometry" />
+        </mxCell>
+        <object label="Interception (2)" id="5b6dd56feeb6a458-29">
+          <mxCell style="shape=ext;rounded=1;html=1;whiteSpace=wrap;fontSize=10;labelBackgroundColor=none;strokeWidth=2;fillColor=#ECEEF7;strokeColor=#1C75BC;" parent="1" vertex="1">
+            <mxGeometry x="609" y="578" width="90" height="55" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell id="5b6dd56feeb6a458-30" value="Livraison des quantités wholesales en fonction des réservations fermes saisies dans MAAT et du stock disponible sur le dépôt de distribution." style="shape=ext;rounded=1;html=1;whiteSpace=wrap;fontSize=10;labelBackgroundColor=none;strokeWidth=2;fillColor=#ECEEF7;strokeColor=#1C75BC;" parent="1" vertex="1">
+          <mxGeometry x="742" y="634" width="117" height="79" as="geometry" />
+        </mxCell>
+        <mxCell id="5b6dd56feeb6a458-33" value="Réassort (3)" style="shape=ext;rounded=1;html=1;whiteSpace=wrap;fontSize=10;labelBackgroundColor=none;strokeWidth=2;fillColor=#ECEEF7;strokeColor=#1C75BC;" parent="1" vertex="1">
+          <mxGeometry x="612" y="715" width="90" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="5b6dd56feeb6a458-23" value="Les Wholesalers fournissent les quantités&lt;br&gt;souhaitées à l&#39;appro&lt;br&gt;&amp;nbsp;(par référence/coloris/taille).&lt;br&gt;Ces quantités sont déterminées à partir du&lt;br&gt;catalogue mis à disposition des wholesalers.&lt;br&gt;" style="shape=mxgraph.bpmn.shape;html=1;verticalLabelPosition=bottom;labelBackgroundColor=none;verticalAlign=top;perimeter=ellipsePerimeter;outline=standard;symbol=general;aspect=fixed;fontSize=10;fillColor=#E8EEAE;strokeColor=#8DC63F;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="133.9999999999999" y="334.5" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="5b6dd56feeb6a458-31" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;labelBackgroundColor=#ffffff;jettySize=auto;orthogonalLoop=1;strokeWidth=2;fontSize=10;strokeColor=#808285;fontColor=#8DC63F;fontStyle=1;labelBorderColor=none;" parent="1" source="5b6dd56feeb6a458-23" target="5b6dd56feeb6a458-26" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-310.5" y="-243.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5b6dd56feeb6a458-26" value="L&#39;approvisionneur saisit la commande wholesale dans MAAT (1)." style="shape=ext;rounded=1;html=1;whiteSpace=wrap;fontSize=10;labelBackgroundColor=none;strokeWidth=2;fillColor=#ECEEF7;strokeColor=#1C75BC;" parent="1" vertex="1">
+          <mxGeometry x="295" y="300" width="90" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="5b6dd56feeb6a458-25" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;labelBackgroundColor=#ffffff;jettySize=auto;orthogonalLoop=1;strokeColor=#808285;strokeWidth=2;fontSize=10;fontColor=#8DC63F;fontStyle=1;labelBorderColor=none;exitX=1;exitY=0.5;" parent="1" source="5b6dd56feeb6a458-26" target="5b6dd56feeb6a458-28" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="789a0accb8444c30-1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;" parent="1" source="5b6dd56feeb6a458-28" target="c3bccc914042382-65" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5b6dd56feeb6a458-28" value="Réception commande fournisseur dans MAATFED" style="shape=ext;rounded=1;html=1;whiteSpace=wrap;fontSize=10;labelBackgroundColor=none;strokeWidth=2;fillColor=#ECEEF7;strokeColor=#1C75BC;" parent="1" vertex="1">
+          <mxGeometry x="383" y="643" width="90" height="55" as="geometry" />
+        </mxCell>
+        <object label="&lt;font style=&quot;font-size: 10px&quot;&gt;Vérification &lt;br&gt;quantité wh &lt;br&gt;à livrer.&lt;/font&gt;" id="c3bccc914042382-65">
+          <mxCell style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="492" y="636" width="100" height="70" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell id="c3bccc914042382-66" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" source="5b6dd56feeb6a458-28" target="c3bccc914042382-65" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="440" y="548" as="sourcePoint" />
+            <mxPoint x="490" y="498" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c3bccc914042382-67" value="" style="endArrow=classic;html=1;entryX=0;entryY=0.5;exitX=0.5;exitY=0;" parent="1" source="c3bccc914042382-65" target="5b6dd56feeb6a458-29" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="512" y="643" as="sourcePoint" />
+            <mxPoint x="562" y="593" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="542" y="606" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c3bccc914042382-68" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" parent="1" source="c3bccc914042382-65" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="522" y="753" as="sourcePoint" />
+            <mxPoint x="612" y="741" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="542" y="741" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c3bccc914042382-72" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0.5;entryY=0;" parent="1" source="5b6dd56feeb6a458-29" target="5b6dd56feeb6a458-30" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="692" y="633" as="sourcePoint" />
+            <mxPoint x="742" y="583" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="801" y="606" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c3bccc914042382-73" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0.5;entryY=1;" parent="1" target="5b6dd56feeb6a458-30" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="702" y="741" as="sourcePoint" />
+            <mxPoint x="752" y="713" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="801" y="741" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="789a0accb8444c30-3" value="&lt;font style=&quot;font-size: 10px&quot;&gt;Type envoi &lt;br&gt;commande &lt;br&gt;wholesale &lt;br&gt;(4) ?&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="990" y="360" width="110" height="80" as="geometry" />
+        </mxCell>
+        <object label="Manuelle : l&#39;approvisionneur déclenche le lancement dans MAAT (1)." id="789a0accb8444c30-5">
+          <mxCell style="shape=ext;rounded=1;html=1;whiteSpace=wrap;fontSize=10;labelBackgroundColor=none;strokeWidth=2;fillColor=#ECEEF7;strokeColor=#1C75BC;" parent="1" vertex="1">
+            <mxGeometry x="1150" y="300" width="90" height="80" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell id="789a0accb8444c30-6" value="Automatique : si la date de livraison souhaitée par wholesale est atteinte et que toutes les tailles sont disponibles, l&#39;envoi est déclenché dans les traitements de nuit." style="shape=ext;rounded=1;html=1;whiteSpace=wrap;fontSize=10;labelBackgroundColor=none;strokeWidth=2;fillColor=#ECEEF7;strokeColor=#1C75BC;" parent="1" vertex="1">
+          <mxGeometry x="1150" y="401" width="90" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="789a0accb8444c30-8" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=0;entryX=0;entryY=0.5;" parent="1" source="789a0accb8444c30-3" target="789a0accb8444c30-5" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1050" y="350" as="sourcePoint" />
+            <mxPoint x="1100" y="300" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1045" y="339" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="789a0accb8444c30-9" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;entryX=0;entryY=0.569;entryPerimeter=0;" parent="1" source="789a0accb8444c30-3" target="789a0accb8444c30-6" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1040" y="490" as="sourcePoint" />
+            <mxPoint x="1090" y="440" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1045" y="491" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <object label="Envoi des ordres de transfert vers REFLEX." id="789a0accb8444c30-10">
+          <mxCell style="shape=ext;rounded=1;html=1;whiteSpace=wrap;fontSize=10;labelBackgroundColor=none;strokeWidth=2;fillColor=#ECEEF7;strokeColor=#1C75BC;" parent="1" vertex="1">
+            <mxGeometry x="1286" y="371" width="90" height="69" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Facturation" id="789a0accb8444c30-12">
+          <mxCell style="shape=ext;rounded=1;html=1;whiteSpace=wrap;fontSize=10;labelBackgroundColor=none;strokeWidth=2;fillColor=#ECEEF7;strokeColor=#1C75BC;" parent="1" vertex="1">
+            <mxGeometry x="1429" y="928" width="90" height="62" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell id="789a0accb8444c30-13" value="" style="endArrow=classic;html=1;entryX=0.5;entryY=0;exitX=1;exitY=0.5;" parent="1" source="789a0accb8444c30-5" target="789a0accb8444c30-10" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1240" y="360" as="sourcePoint" />
+            <mxPoint x="1290" y="310" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1331" y="339" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="789a0accb8444c30-14" value="" style="endArrow=classic;html=1;entryX=0.5;entryY=1;exitX=1.011;exitY=0.584;exitPerimeter=0;" parent="1" source="789a0accb8444c30-6" target="789a0accb8444c30-10" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1240" y="510" as="sourcePoint" />
+            <mxPoint x="1290" y="460" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1331" y="493" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="789a0accb8444c30-15" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0.5;entryY=0;" parent="1" source="789a0accb8444c30-10" target="2e4e2c155ef88661-8" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1373" y="406" as="sourcePoint" />
+            <mxPoint x="1397" y="804" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1397" y="406" />
+              <mxPoint x="1397" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="789a0accb8444c30-16" value="" style="endArrow=classic;html=1;exitX=0;exitY=0.5;" parent="1" source="2e4e2c155ef88661-8" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1195" y="871" as="sourcePoint" />
+            <mxPoint x="1427" y="959" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1195" y="840" />
+              <mxPoint x="1195" y="959" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="789a0accb8444c30-17" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" source="789a0accb8444c30-12" target="5b6dd56feeb6a458-24" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1549" y="578" as="sourcePoint" />
+            <mxPoint x="1599" y="528" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="789a0accb8444c30-18" value="(1) : Option de menu MAAT/Réassort &amp;amp; simulations/Besoins/Gestion du stock réservé.&lt;br&gt;&lt;br&gt;(2) : A l&#39;interception d&#39;une commande fournisseur (INP), on vérifie si il existe des quantités réservées wholesale dans MAAT, si c&#39;est le cas les quantités sont interceptées pour le DD concerné.&amp;nbsp;&lt;br&gt;&lt;br&gt;(3) : Le traitement MAAT_NUIT_02/RESERVATION_WH (UC 2.11) vérifie si toutes les quantités réservées wholesale sont disponibles en DD, si ce n&#39;est pas le cas, on envoie les quantités manquantes (cette étape permet de livrer le delta des quantités si l&#39;approvisionneur a modifié ces dernières dans MAAT).&lt;br&gt;&lt;br&gt;(4) : Le déclenchement de l&#39;envoi des ordres de transfert de MAAT vers REFLEX peut se faire de deux façons manuellement ou automatiquemen, sous condition que :&lt;br&gt;- toutes les tailles soient disponibles pour la référence/coloris&lt;br&gt;- la date de livraison de la commande wholesale soit atteinte dans l&#39;écran de gestion des stocks réservés wholesale&lt;br&gt;- que le wholesaler soit paramétré avec&amp;nbsp;&lt;span&gt;le top&amp;nbsp;TOP_SR_WHOLESALE_AUTO à &#39;1&#39; dans la table MAAT.MAGASIN_ENSEIGNE.&lt;br&gt;&lt;/span&gt;(5) : Ce traitement permet d&#39;alimenter le BO à chaque chaîne de nuit avec les quantités réservés WH. MAAT_NUIT_02/BO_STK_RESERV_WH&lt;br&gt;&lt;br&gt;" style="shape=note;whiteSpace=wrap;html=1;fillColor=#ffff88;strokeColor=#36393d;" parent="1" vertex="1">
+          <mxGeometry x="75" y="1191" width="890" height="250" as="geometry" />
+        </mxCell>
+        <object label="Réception de la commande sur le stock picking MAAT." id="789a0accb8444c30-21">
+          <mxCell style="shape=ext;rounded=1;html=1;whiteSpace=wrap;fontSize=10;labelBackgroundColor=none;strokeWidth=2;fillColor=#ECEEF7;strokeColor=#1C75BC;" parent="1" vertex="1">
+            <mxGeometry x="840" y="367" width="90" height="62" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell id="789a0accb8444c30-22" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0.5;entryY=1;" parent="1" source="5b6dd56feeb6a458-30" target="789a0accb8444c30-21" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="860" y="680" as="sourcePoint" />
+            <mxPoint x="910" y="630" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="885" y="674" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="789a0accb8444c30-23" value="" style="endArrow=classic;html=1;entryX=0;entryY=0.5;" parent="1" target="789a0accb8444c30-3" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="930" y="400" as="sourcePoint" />
+            <mxPoint x="980" y="376" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="591d7fac8042af91-1" value="Vente Wholesale" style="swimlane;html=1;childLayout=stackLayout;resizeParent=1;resizeParentMax=0;horizontal=0;startSize=20;horizontalStack=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="10" y="288" width="1630" height="860" as="geometry" />
+        </mxCell>
+        <mxCell id="591d7fac8042af91-2" value="MAAT" style="swimlane;html=1;startSize=20;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;" parent="591d7fac8042af91-1" vertex="1">
+          <mxGeometry x="20" width="1610" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="591d7fac8042af91-9" value="" style="endArrow=classic;html=1;entryX=0.5;entryY=0;" parent="591d7fac8042af91-2" target="c3bccc914042382-6" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="230" y="64" as="sourcePoint" />
+            <mxPoint x="230" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="591d7fac8042af91-10" value="" style="shape=mxgraph.bpmn.user_task;html=1;outlineConnect=0;" parent="591d7fac8042af91-2" vertex="1">
+          <mxGeometry x="279" y="18" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="591d7fac8042af91-11" value="" style="shape=mxgraph.bpmn.user_task;html=1;outlineConnect=0;" parent="591d7fac8042af91-2" vertex="1">
+          <mxGeometry x="1124" y="13" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="591d7fac8042af91-12" value="" style="shape=mxgraph.bpmn.service_task;html=1;outlineConnect=0;" parent="591d7fac8042af91-2" vertex="1">
+          <mxGeometry x="1128" y="113" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="591d7fac8042af91-13" value="" style="shape=mxgraph.bpmn.service_task;html=1;outlineConnect=0;" parent="591d7fac8042af91-2" vertex="1">
+          <mxGeometry x="1262" y="83" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="591d7fac8042af91-3" value="MAATFED" style="swimlane;html=1;startSize=20;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;" parent="591d7fac8042af91-1" vertex="1">
+          <mxGeometry x="20" y="280" width="1610" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="591d7fac8042af91-14" value="" style="shape=mxgraph.bpmn.service_task;html=1;outlineConnect=0;" parent="591d7fac8042af91-3" vertex="1">
+          <mxGeometry x="583" y="11" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="591d7fac8042af91-15" value="" style="shape=mxgraph.bpmn.service_task;html=1;outlineConnect=0;" parent="591d7fac8042af91-3" vertex="1">
+          <mxGeometry x="586" y="149" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="591d7fac8042af91-4" value="REFLEX" style="swimlane;html=1;startSize=20;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;" parent="591d7fac8042af91-1" vertex="1">
+          <mxGeometry x="20" y="500" width="1610" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="2e4e2c155ef88661-8" value="Préparation des ordres :&lt;br&gt;&lt;b&gt;processus approvisionnement aval&lt;/b&gt;&lt;br&gt;" style="shape=process;whiteSpace=wrap;html=1;" parent="591d7fac8042af91-4" vertex="1">
+          <mxGeometry x="1251" y="20" width="230" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="591d7fac8042af91-5" value="NODHOS" style="swimlane;html=1;startSize=20;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;" parent="591d7fac8042af91-1" vertex="1">
+          <mxGeometry x="20" y="620" width="1610" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="c3bccc914042382-6" value="Commande Achat" style="shape=process;whiteSpace=wrap;html=1;" parent="591d7fac8042af91-5" vertex="1">
+          <mxGeometry x="173" y="30" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="c3bccc914042382-7" value="&lt;font style=&quot;font-size: 10px&quot;&gt;Les quantités wholesales sont fournies aux acheteurs, 2 possibilités :&lt;br&gt;- commande fournisseur spécifique wholesale&lt;br&gt;- ou, prise en compte des quantités wholesale dans la commande fournisseur standard&lt;/font&gt;&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="591d7fac8042af91-5" vertex="1">
+          <mxGeometry x="313.5" y="46" width="263" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="2e4e2c155ef88661-1" value="BO" style="swimlane;html=1;startSize=20;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;" parent="591d7fac8042af91-1" vertex="1">
+          <mxGeometry x="20" y="740" width="1610" height="120" as="geometry" />
+        </mxCell>
+        <object label="Remontée des informations stock réservé (5)" id="2e4e2c155ef88661-4">
+          <mxCell style="shape=ext;rounded=1;html=1;whiteSpace=wrap;fontSize=10;labelBackgroundColor=none;strokeWidth=2;fillColor=#ECEEF7;strokeColor=#1C75BC;" parent="2e4e2c155ef88661-1" vertex="1">
+            <mxGeometry x="1399" y="26" width="90" height="71" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell id="2e4e2c155ef88661-9" value="" style="shape=mxgraph.bpmn.service_task;html=1;outlineConnect=0;" parent="2e4e2c155ef88661-1" vertex="1">
+          <mxGeometry x="1401" y="31" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="2e4e2c155ef88661-5" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=1;entryY=0.5;" parent="1" source="2e4e2c155ef88661-4" target="5b6dd56feeb6a458-24" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1530" y="1110" as="sourcePoint" />
+            <mxPoint x="1600" y="980" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1600" y="1090" />
+              <mxPoint x="1630" y="1090" />
+              <mxPoint x="1630" y="1040" />
+              <mxPoint x="1630" y="960" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

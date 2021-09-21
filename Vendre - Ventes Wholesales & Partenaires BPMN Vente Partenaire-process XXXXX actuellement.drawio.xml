@@ -1,9 +1,4 @@
-# %%
-from os import replace
-from typing import Text
-import xml.etree.ElementTree as ET
-import re
-data='''<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="Electron" modified="2021-09-10T20:42:21.928Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/15.1.3 Chrome/89.0.4389.128 Electron/12.1.0 Safari/537.36" etag="KFTcWUJoXA6ucUvcokqC" version="15.1.3" type="device">
   <diagram id="e45bbcb4-4817-f833-fe68-a42dc8e9f8da" name="process XXXXX actuellement">
     <mxGraphModel dx="1088" dy="968" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
@@ -236,73 +231,3 @@ data='''<?xml version="1.0" encoding="UTF-8"?>
     </mxGraphModel>
   </diagram>
 </mxfile>
-
-'''
-myroot = ET.fromstring(data)
-cleanr = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
-for mxCell in myroot.iter('mxCell'):
-    try:
-      cleantext = re.sub(cleanr,'', mxCell.attrib['value'])
-      print(cleantext+"/"+mxCell.attrib['style'].split(';')[0])
-    except:
-      pass
-    
-# %%
-tel = {'jack': '', 'sape': 4139}
-if ('value' in tel):
-    print(tel['value'])
-if ('jack' in tel):
-    print('0') if len(tel['jack']) == 0 else print(1)
-tel['sape']
-'value' in tel
-
-
-# %%
-import csv
-artefactscolumns = ["key", "name", "type", "businessID", "orderNumber", "description", "serviceLevelAgreement", "frequency", "activityType", "periodicity", "platform", "contractScope"]
-relationscolums = ["parentKey" ,"childKey","relationType", "metaX"]
-with open('artefacts.csv', 'w+', newline='') as artefactscsvfile:
-    artefactswriter = csv.writer(artefactscsvfile, delimiter=';',
-                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    artefactswriter.writerow(artefactscolumns)
-
-
-  # %%
-def addt(a):
-  a = a + 2
-  return a
-
-a = 1
-addt(a)
-print(a)
-
-
-# %%
-# initialise the file that will contains all the artefacts (processes & applications)
-artefactscolumns = ["key", "name", "type", "businessID", "orderNumber", "description", "serviceLevelAgreement", "frequency", "activityType", "periodicity", "platform", "contractScope"]
-with open('artefacts.csv', 'w+', newline='') as artefactscsvfile:
-    artefactswriter = csv.writer(artefactscsvfile, delimiter=';',
-                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
-
-# initialise the file that will contains all the relations (processes & applications)
-relationscolumns = ["parentKey" ,"childKey","relationType", "metaX"]
-with open('relations.csv', 'w+', newline='') as relationscsvfile:
-    relationswriter = csv.writer(relationscsvfile, delimiter=';',
-                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
-
-def writecsv():
-    artefactswriter.writerow(artefactscolumns)
-    relationswriter.writerow(relationscolumns)
-
-writecsv()
-# %%
-file = 'Vendre - Ventes Wholesales & Partenaires BPMN Commande web DW avec OMS (1)-process commande web sous Demandware.drawio.xml'
-filename = file[file.rfind('-')+1:-(len(file)-(file.find('.')))]
-print(filename)
-# %%
-v = 'a'
-listt = ['a', 'b', 'c']
-'d' in listt
-# %%
-not ('aa' == 'bb')
-# %%
