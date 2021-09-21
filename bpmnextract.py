@@ -5,8 +5,6 @@
 10) Open  all the files of a directory
     for each file name ; catch filename
 
-15) catch value of <diagram> ---> non plus necessaire
-
 20) catch all interesting attributes of mxCell :
     - id, value, id_of_parent, style, source, target
 
@@ -60,8 +58,7 @@ first pass : create all the nodes
 second pass : create the hierarchy between the artefacts. if the Cell has no parents : attach to the name of the file
                 which is the top of the hierarchy
                 --> hierarchy made by linking nodes with edges (labels "contains")
-thrid pass : create link between activities by creating edges  (labels "is before")
-
+third pass : create link between activities by creating edges  (labels "is before")
 
 '''
 import os
@@ -148,13 +145,13 @@ def getfiles(input_path, extension):
 
 def parentIsaProcess(myfile, parentID):
     '''
-        In the files that are analysed process name are in swimlanes
+        In the files that are analysed, processes names are in swimlanes
         and a valid name always begin with "processus"
     '''
     for file, dictWithDetails in dictOfFilesAndDetails.items():
         for id, listOfDetails in dictWithDetails.items():
             (inferedtype, generatedIdForMap, cleanvalue, parentId, style, source, target) = listOfDetails
-            if (myfile == file and parentID == id):
+            if (myfile == file and parentID == id): # as I am not sure that ID are UUID I want to make sure that I found the right parent in the right file
                 if cleanvalue is not None:
                     if (cleanvalue.lower()[0:9] == 'processus'):
                         return [True, generatedIdForMap]
