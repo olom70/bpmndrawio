@@ -300,3 +300,43 @@ file = 'Vendre - Ventes Wholesales & Partenaires BPMN Commande web DW avec OMS (
 filename = file[file.rfind('-')+1:-(len(file)-(file.find('.')))]
 print(filename)
 # %%
+v = 'a'
+listt = ['a', 'b', 'c']
+'d' in listt
+# %%
+not ('aa' == 'bb')
+# %%
+var = [0, 1]
+varb = var
+
+varb[0] = 2
+print(var)
+# %%
+import csv
+def createfile(l):
+  r = []
+  for v in l:
+    csvfile = open(v, 'w+', newline='')
+    fieldnames = ['first_name', 'last_name']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    r = r + [csvfile, writer]
+  return r
+
+w = createfile(['names3.csv', 'names4.csv'])
+print(w)
+w[1].writeheader()
+w[1].writerow({'first_name': 'Baked', 'last_name': 'Beans'})
+w[1].writerow({'first_name': 'Lovely', 'last_name': 'Spam'})
+w[1].writerow({'first_name': 'Wonderful', 'last_name': 'Spam'})
+w[3].writeheader()
+w[3].writerow({'first_name': 'Baked', 'last_name': 'Beans'})
+w[3].writerow({'first_name': 'Lovely', 'last_name': 'Spam'})
+w[3].writerow({'first_name': 'Wonderful', 'last_name': 'Spam'})
+w[0].close()
+w[2].close()
+# %%
+a = []
+a = a + [1, 0]
+a = a + [2, 3]
+print(a)
+# %%

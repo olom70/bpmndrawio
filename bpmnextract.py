@@ -100,8 +100,24 @@ if not os.path.isdir(input_path):
     sys.exit()
 
 
+####### Global SCope Variables ##############
 listOfFiles = []
 dictOfFilesAndDetails = {}
+MACROBUSINESSPROCESS = 'MACRO_BUSINESS_PROCESS:'
+APPLICATION = 'APPLICATION:'
+MACROBUSINESSPROCESSTYPE  = 'MacroBusinessProcess'
+APPLICATIONTYPE = 'Application'
+RELATION_SERVE = 'serves'
+
+
+#################### Functions ##################
+def getProcessName(fullName):
+    '''
+        get just the name of the file without the path nor the extension and spaces
+    '''
+    #trimmedFilename = file[file.rfind(os.path.sep)+1:-(len(file)-(file.rfind('.')))].replace(" ", "")
+    return fullName[fullName.rfind('-')+1:-(len(fullName)-(fullName.find('.')))].replace(" ", "") 
+
 
 def getfiles(input_path, extension):
     '''
@@ -116,47 +132,96 @@ def getfiles(input_path, extension):
         listOfFiles.append(file)
     return listOfFiles
 
+def parentIsaProcess(myfile, parentID):
+    for file, dictWithDetails in dictOfFilesAndDetails.items():
+        for id, listOfDetails in dictWithDetails.items():
+            (inferedtype, generatedIdForMap, cleanvalue, parentId, style, source, target) = listOfDetails
+            if (myfile == file and parentID == id):
+                if cleanvalue is not None:
+                    if (cleanvalue.lower()[0:9] == 'processus'):
+                        return [True, generatedIdForMap]
+                        break
+    return [False, None]
+
+def initArtefact(**kwargs):
+    '''
+        initialise the row that is about to be written in a file containing the artefacts for MAP
+    '''
+    key = ''
+    name = ''
+    type = ''
+    businessID = ''
+    ordernumber = ''
+    description = ''
+    serviceLevelAgreement = ''
+    frequency = ''
+    activityType = ''
+    periodicity = ''
+    platform = ''
+    contractScope = ''
+
+    for k, v in kwargs.items():
+        if k == 'key': key = v
+        if k == 'name' : name = v 
+        if k == 'type' : type = v
+        if k == 'businessID' : businessID = v
+        if k == 'ordernumber' : ordernumber = v
+        if k == 'description' : description = v
+        if k == 'serviceLevelAgreement' : serviceLevelAgreement = v
+        if k == 'frequency' : frequency = v
+        if k == 'activityType' : activityType = v
+        if k == 'periodicity' : periodicity = v
+        if k == 'platform' : platform = v
+        if k == 'contractScope' : contractScope = v
+    return [key, name, type, businessID, ordernumber, description, serviceLevelAgreement, frequency, activityType, periodicity, platform, contractScope]
+
+def initArtefactHeader():
+    '''
+        Initialise the first row of the artefact file
+    '''
+    return initArtefact(key='key', name = 'name', type='name', businessID='businessID', ordernumber='ordernumber', description='description', serviceLevelAgreement='serviceLevelAgreement', frequency='frequency', activityType='activityType', periodicity='periodicity', platform='platform', contractScope='contractScope')
+
+def initRelations(**kwargs):
+    parentKey = ''
+    childKey = ''
+    relationType = ''
+    metaX = ''
+    for k, v in kwargs.items():
+        if k == 'parentKey': parentKey = v
+        if k == 'childKey': childKey = v
+        if k == 'relationType': relationType = v
+        if k == 'metaX': metaX = v
+    return [parentKey, childKey, relationType, metaX]
+
+def initRelationsHeader():
+    '''
+        Initialise the first row of the relation file
+    '''
+    return initRelations(parentKey='parentKey', childKey='childKey', relationType='relationType', metaX='metaX')
+
 def appendMapFiles(dictionary):
     '''
         Generate 2 files ready to import in MAP :
         - artefacts : all the artefacts of any type to add in MAP
         - relations : relations between the artefacts
     '''
-    MACROBUSINESSPROCESS = 'MACRO_BUSINESS_PROCESS:'
-    APPLICATION = 'APPLICATION:'
-    MACROBUSINESSPROCESSTYPE  = 'MacroBusinessProcess'
-    APPLICATIONTYPE = 'Application'
+    listOfDefaultsProcess = []
     # initialise the file that will contains all the artefacts (processes & applications)
-    artefactscolumns = ["key", "name", "type", "businessID", "orderNumber", "description", "serviceLevelAgreement", "frequency", "activityType", "periodicity", "platform", "contractScope"]
     artefactscsvfile = open('artefacts.csv', 'w+', newline='')
     artefactswriter = csv.writer(artefactscsvfile, delimiter=';',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    artefactswriter.writerow(artefactscolumns)
+    artefactswriter.writerow(initArtefactHeader())
 
     # initialise the file that will contains all the relations (processes & applications)
-    relationscolumns = ["parentKey" ,"childKey","relationType", "metaX"]
     relationscsvfile = open('relations.csv', 'w+', newline='')
     relationswriter = csv.writer(relationscsvfile, delimiter=';',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    relationswriter.writerow(relationscolumns)
+    relationswriter.writerow(initRelationsHeader())
     # begin to fill up the files
     for file, dictWithDetails in dictionary.items():
         ProcessName = file[file.rfind('-')+1:-(len(file)-(file.find('.')))]
         for id, listOfDetails in dictWithDetails.items():
             (inferedtype, generatedIdForMap, cleanvalue, parentId, style, source, target) = listOfDetails
-            toWrite = []
-            key = ''
-            name = ''
-            type = ''
-            businessID = ''
-            ordernumber = ''
-            description = ''
-            serviceLevelAgreement = ''
-            frequency = ''
-            activityType = ''
-            periodicity = ''
-            platform = ''
-            contractScope = ''
             if (cleanvalue is None):
                 label = ''
             else:
@@ -167,29 +232,32 @@ def appendMapFiles(dictionary):
                     name = cleanvalue
                     type = MACROBUSINESSPROCESSTYPE
                     businessID = generatedIdForMap
-                    ordernumber = ''
-                    description = label
-                    serviceLevelAgreement = ''
-                    frequency = ''
-                    activityType = ''
-                    periodicity = ''
-                    platform = ''
-                    contractScope = ''
+                    toWrite = initArtefact(key=key, name=name, type=type, businessID=businessID)
                 else: #it's an application
                     key = APPLICATION+generatedIdForMap
                     name = cleanvalue
                     type = APPLICATIONTYPE
-                    businessID = ''
-                    ordernumber = ''
-                    description = label
-                    serviceLevelAgreement = ''
-                    frequency = ''
-                    activityType = ''
-                    periodicity = ''
-                    platform = ''
-                    contractScope = ''
-                toWrite = [key, name, type, businessID, ordernumber, description, serviceLevelAgreement, frequency, activityType, periodicity, platform, contractScope]
+                    toWrite = initArtefact(key=key, name=name, type=type)
                 artefactswriter.writerow(toWrite)
+                # find out if the parent is a processus and write the relation if its the case.
+                if parentId is not None:
+                    [relationtowrite, parentGeneratedIdForMap] = parentIsaProcess(file, parentId)
+                    if relationtowrite:
+                        relationswriter.writerow([parentGeneratedIdForMap, generatedIdForMap, RELATION_SERVE])
+                    else:
+                        # create the artefact for a default the process (named after the name of the process in the last part of the filename)
+                        defaultArtefactKey = MACROBUSINESSPROCESS+getProcessName(file)+parentId
+                        if not(getProcessName(file) in listOfDefaultsProcess):
+                            listOfDefaultsProcess.append(getProcessName(file))
+                            key = defaultArtefactKey
+                            name = getProcessName(file)
+                            type = MACROBUSINESSPROCESSTYPE
+                            businessID=getProcessName(file)+parentId
+                            toWrite= initArtefact(key=key, name=name, type=type, businessID=businessID)
+                            artefactswriter.writerow(toWrite)
+                        # create the relation
+                        toWrite = initRelations(parentKey=defaultArtefactKey, childKey=generatedIdForMap, relationType=RELATION_SERVE)
+                        relationswriter.writerow(toWrite)    
     artefactscsvfile.close()
     relationscsvfile.close()
 
@@ -257,10 +325,11 @@ def getInferedType(style, has_a_source):
     else:
         return 'generic'
 
+
 def analysefiles(listOfFiles):
     '''
-    parse the list. for each file in the list : get the details of mxCell
-    append in a dictionary {filename : {id : [inferedtype, genereatedIdForMap, value, id_of_parent, style, source, target]}}} 
+        parse the list. for each file in the list : get the details of mxCell
+        append in a dictionary {filename : {id : [inferedtype, genereatedIdForMap, value, id_of_parent, style, source, target]}}} 
     '''
     has_attribute = lambda mxcell, attribute : attribute in mxcell
     # regex to clean up html tags and special character (e.g. &nbsp;)
@@ -271,9 +340,7 @@ def analysefiles(listOfFiles):
         # detailsDict {id : [inferedtype, genereatedIdForMap, value, parentId, style, source, target]}} 
         detailsDict = {}
         listOfdetails = []
-        #get just the name the file without the path nor the extension and withoutspaces
-        #trimmedFilename = file[file.rfind(os.path.sep)+1:-(len(file)-(file.rfind('.')))].replace(" ", "")
-        processName = file[file.rfind('-')+1:-(len(file)-(file.find('.')))].replace(" ", "")
+        processName = getProcessName(file) 
         with open(file) as xmltoanalyse:
             data = open(file).read()
             # is it an xml file ?
@@ -305,8 +372,8 @@ def analysefiles(listOfFiles):
                 mainDict[file] = detailsDict
     return mainDict
 
-# ----------------- main ----------------
-# variables and functions of the program
+# ##################################### main ###########################
+
 # parse all files
 listOfFiles = getfiles(input_path, extension)
 
@@ -316,7 +383,6 @@ dictOfFilesAndDetails = analysefiles(listOfFiles)
 # generate the file for Yed (Graphml file)
 for file, dictWithDetails in dictOfFilesAndDetails.items():
     g = pyyed.Graph()
-    #g.add_node(file, font_size="14", shape="rectangle3d")
     for what in ('yed_nodes', 'yed_hierarchy'): #, 'yed_edges'):
             appendYedFile(what, dictOfFilesAndDetails)
     g.write_graph(file+'.graphml', pretty_print=True)
