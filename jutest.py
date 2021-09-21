@@ -319,7 +319,7 @@ def createfile(l):
     csvfile = open(v, 'w+', newline='')
     fieldnames = ['first_name', 'last_name']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-    r = r + [csvfile, writer]
+    r += [csvfile, writer]
   return r
 
 w = createfile(['names3.csv', 'names4.csv'])

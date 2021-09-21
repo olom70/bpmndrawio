@@ -111,6 +111,20 @@ RELATION_SERVE = 'serves'
 
 
 #################### Functions ##################
+def createfiles(l):
+    '''
+        create the files for MAP import
+        input : a list of filename to create
+        output : for each input file : a file named after the input, and a csv.writer to put content in it
+    '''
+    r = []
+    for v in l:
+        csvfile = open(v, 'w+', newline='')
+        writer = csv.writer(csvfile, delimiter=';',
+                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        r += [csvfile, writer]
+    return r
+
 def getProcessName(fullName):
     '''
         get just the name of the file without the path nor the extension and spaces
@@ -133,6 +147,10 @@ def getfiles(input_path, extension):
     return listOfFiles
 
 def parentIsaProcess(myfile, parentID):
+    '''
+        In the files that are analysed process name are in swimlanes
+        and a valid name always begin with "processus"
+    '''
     for file, dictWithDetails in dictOfFilesAndDetails.items():
         for id, listOfDetails in dictWithDetails.items():
             (inferedtype, generatedIdForMap, cleanvalue, parentId, style, source, target) = listOfDetails
@@ -145,7 +163,7 @@ def parentIsaProcess(myfile, parentID):
 
 def initArtefact(**kwargs):
     '''
-        initialise the row that is about to be written in a file containing the artefacts for MAP
+        initialise the row that is about to be written in a file containing the artefacts to import in MAP
     '''
     key = ''
     name = ''
@@ -177,11 +195,14 @@ def initArtefact(**kwargs):
 
 def initArtefactHeader():
     '''
-        Initialise the first row of the artefact file
+        Initialise the first row of the artefact file : the header
     '''
     return initArtefact(key='key', name = 'name', type='name', businessID='businessID', ordernumber='ordernumber', description='description', serviceLevelAgreement='serviceLevelAgreement', frequency='frequency', activityType='activityType', periodicity='periodicity', platform='platform', contractScope='contractScope')
 
 def initRelations(**kwargs):
+    '''
+        initialise the row that is about to be written in a file containing the relations to import in MAP
+    '''
     parentKey = ''
     childKey = ''
     relationType = ''
@@ -195,7 +216,7 @@ def initRelations(**kwargs):
 
 def initRelationsHeader():
     '''
-        Initialise the first row of the relation file
+        Initialise the first row of the relation file : the header
     '''
     return initRelations(parentKey='parentKey', childKey='childKey', relationType='relationType', metaX='metaX')
 
@@ -206,17 +227,14 @@ def appendMapFiles(dictionary):
         - relations : relations between the artefacts
     '''
     listOfDefaultsProcess = []
-    # initialise the file that will contains all the artefacts (processes & applications)
-    artefactscsvfile = open('artefacts.csv', 'w+', newline='')
-    artefactswriter = csv.writer(artefactscsvfile, delimiter=';',
-                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    artefactswriter.writerow(initArtefactHeader())
-
-    # initialise the file that will contains all the relations (processes & applications)
-    relationscsvfile = open('relations.csv', 'w+', newline='')
-    relationswriter = csv.writer(relationscsvfile, delimiter=';',
-                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    relationswriter.writerow(initRelationsHeader())
+    # initialise the 2 files to import in MAP
+    # outputfiles[0] = file for artefacts
+    # outputfiles[1] = csv writer for artefacts
+    # outputfiles[2] = file for relations
+    # outputfiles[3] = csv writer for relations
+    outputfiles = createfiles(['artefacts.csv', 'relations.csv'])
+    outputfiles[1].writerow(initArtefactHeader())
+    outputfiles[3].writerow(initRelationsHeader())
     # begin to fill up the files
     for file, dictWithDetails in dictionary.items():
         ProcessName = file[file.rfind('-')+1:-(len(file)-(file.find('.')))]
@@ -238,14 +256,15 @@ def appendMapFiles(dictionary):
                     name = cleanvalue
                     type = APPLICATIONTYPE
                     toWrite = initArtefact(key=key, name=name, type=type)
-                artefactswriter.writerow(toWrite)
+                outputfiles[1].writerow(toWrite)
                 # find out if the parent is a processus and write the relation if its the case.
                 if parentId is not None:
                     [relationtowrite, parentGeneratedIdForMap] = parentIsaProcess(file, parentId)
+                    # link the current application with the parent swimlane only if it's a valid processus
                     if relationtowrite:
-                        relationswriter.writerow([parentGeneratedIdForMap, generatedIdForMap, RELATION_SERVE])
+                        outputfiles[3].writerow([parentGeneratedIdForMap, generatedIdForMap, RELATION_SERVE])
                     else:
-                        # create the artefact for a default the process (named after the name of the process in the last part of the filename)
+                        # create the artefact for a "default process" named after the name of the process in the last part of the filename
                         defaultArtefactKey = MACROBUSINESSPROCESS+getProcessName(file)+parentId
                         if not(getProcessName(file) in listOfDefaultsProcess):
                             listOfDefaultsProcess.append(getProcessName(file))
@@ -254,12 +273,12 @@ def appendMapFiles(dictionary):
                             type = MACROBUSINESSPROCESSTYPE
                             businessID=getProcessName(file)+parentId
                             toWrite= initArtefact(key=key, name=name, type=type, businessID=businessID)
-                            artefactswriter.writerow(toWrite)
-                        # create the relation
+                            outputfiles[1].writerow(toWrite)
+                        # create the relation between the current application and the defaul process
                         toWrite = initRelations(parentKey=defaultArtefactKey, childKey=generatedIdForMap, relationType=RELATION_SERVE)
-                        relationswriter.writerow(toWrite)    
-    artefactscsvfile.close()
-    relationscsvfile.close()
+                        outputfiles[3].writerow(toWrite)    
+    outputfiles[0].close()
+    outputfiles[2].close()
 
 def appendYedFile(what, dictionary):
     '''
@@ -325,10 +344,10 @@ def getInferedType(style, has_a_source):
     else:
         return 'generic'
 
-
 def analysefiles(listOfFiles):
     '''
-        parse the list. for each file in the list : get the details of mxCell
+        parse the input list.
+        For each file in the list : get the details of mxCell
         append in a dictionary {filename : {id : [inferedtype, genereatedIdForMap, value, id_of_parent, style, source, target]}}} 
     '''
     has_attribute = lambda mxcell, attribute : attribute in mxcell
@@ -374,7 +393,7 @@ def analysefiles(listOfFiles):
 
 # ##################################### main ###########################
 
-# parse all files
+# parse all xml files to analyse
 listOfFiles = getfiles(input_path, extension)
 
 # break down the content of all files into a dictionary
