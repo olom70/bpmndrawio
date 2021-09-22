@@ -100,6 +100,7 @@ if not os.path.isdir(input_path):
 ####### Global SCope Variables ##############
 listOfFiles = []
 dictOfFilesAndDetails = {}
+cleanr = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
 MACROBUSINESSPROCESS = 'MACRO_BUSINESS_PROCESS:'
 APPLICATION = 'APPLICATION:'
 MACROBUSINESSPROCESSTYPE  = 'MacroBusinessProcess'
@@ -116,7 +117,7 @@ def createfiles(l):
     '''
     r = []
     for v in l:
-        csvfile = open(v, 'w+', newline='')
+        csvfile = open(v, 'w+', newline='', encoding="utf-8")
         writer = csv.writer(csvfile, delimiter=';',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
         r += [csvfile, writer]
@@ -154,7 +155,7 @@ def parentIsaProcess(myfile, parentID):
             if (myfile == file and parentID == id): # as I am not sure that ID are UUID I want to make sure that I found the right parent in the right file
                 if cleanvalue is not None:
                     if (cleanvalue.lower()[0:9] == 'processus'):
-                        return [True, generatedIdForMap]
+                        return [True, MACROBUSINESSPROCESS+generatedIdForMap]
                         break
     return [False, None]
 
@@ -194,7 +195,7 @@ def initArtefactHeader():
     '''
         Initialise the first row of the artefact file : the header
     '''
-    return initArtefact(key='key', name = 'name', type='name', businessID='businessID', ordernumber='ordernumber', description='description', serviceLevelAgreement='serviceLevelAgreement', frequency='frequency', activityType='activityType', periodicity='periodicity', platform='platform', contractScope='contractScope')
+    return initArtefact(key='key', name = 'name', type='type', businessID='businessID', ordernumber='ordernumber', description='description', serviceLevelAgreement='serviceLevelAgreement', frequency='frequency', activityType='activityType', periodicity='periodicity', platform='platform', contractScope='contractScope')
 
 def initRelations(**kwargs):
     '''
@@ -259,7 +260,7 @@ def appendMapFiles(dictionary):
                     [relationtowrite, parentGeneratedIdForMap] = parentIsaProcess(file, parentId)
                     # link the current application with the parent swimlane only if it's a valid processus
                     if relationtowrite:
-                        outputfiles[3].writerow([parentGeneratedIdForMap, generatedIdForMap, RELATION_SERVE])
+                        outputfiles[3].writerow([APPLICATION+generatedIdForMap, parentGeneratedIdForMap, RELATION_SERVE])
                     else:
                         # create the artefact for a "default process" named after the name of the process in the last part of the filename
                         defaultArtefactKey = MACROBUSINESSPROCESS+getProcessName(file)+parentId
@@ -272,7 +273,7 @@ def appendMapFiles(dictionary):
                             toWrite= initArtefact(key=key, name=name, type=type, businessID=businessID)
                             outputfiles[1].writerow(toWrite)
                         # create the relation between the current application and the defaul process
-                        toWrite = initRelations(parentKey=defaultArtefactKey, childKey=generatedIdForMap, relationType=RELATION_SERVE)
+                        toWrite = initRelations(parentKey=APPLICATION+generatedIdForMap, childKey=defaultArtefactKey, relationType=RELATION_SERVE)
                         outputfiles[3].writerow(toWrite)    
     outputfiles[0].close()
     outputfiles[2].close()
@@ -341,6 +342,16 @@ def getInferedType(style, has_a_source):
     else:
         return 'generic'
 
+def cleanName(value, trimSpace=False):
+    '''
+        remove specials characters, html elements.
+        also remove spaces if asked to do
+    '''
+    if trimSpace: c = re.sub(cleanr,'', value).replace(" ", "")
+    if not trimSpace: c = re.sub(cleanr,'', value)
+    if len(c) == 0: c = 'NoName'
+    return c
+
 def analysefiles(listOfFiles):
     '''
         parse the input list.
@@ -349,7 +360,6 @@ def analysefiles(listOfFiles):
     '''
     has_attribute = lambda mxcell, attribute : attribute in mxcell
     # regex to clean up html tags and special character (e.g. &nbsp;)
-    cleanr = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
     # main dict {filename : {dictwithdetails}}
     mainDict = {}
     for file in listOfFiles:
@@ -357,7 +367,7 @@ def analysefiles(listOfFiles):
         detailsDict = {}
         listOfdetails = []
         processName = getProcessName(file) 
-        with open(file) as xmltoanalyse:
+        with open(file, encoding='utf-8') as xmltoanalyse:
             data = open(file).read()
             # is it an xml file ?
             if data[0:5] == '<?xml':
@@ -375,8 +385,9 @@ def analysefiles(listOfFiles):
                         styleToExamine = mxCell.attrib['style'].split(';')[0]
                         ha = has_attribute(mxCell.attrib, 'source')  
                         inferedtype = getInferedType(styleToExamine, ha)
-                    if 'id' in mxCell.attrib: generatedIdForMap = processName+mxCell.attrib['id']
-                    if 'value' in mxCell.attrib: cleanvalue = re.sub(cleanr,'', mxCell.attrib['value'])
+                    if ('id' in mxCell.attrib and 'value' in mxCell.attrib): generatedIdForMap = cleanName(mxCell.attrib['value'], True)
+                    if ('id' in mxCell.attrib and 'value' not in mxCell.attrib): generatedIdForMap = mxCell.attrib['id']
+                    if 'value' in mxCell.attrib: cleanvalue = cleanName(mxCell.attrib['value'], False)
                     if 'parent' in mxCell.attrib: parentId = mxCell.attrib['parent']
                     if 'style' in mxCell.attrib: style = mxCell.attrib['style']
                     if 'source' in mxCell.attrib: source = mxCell.attrib['source']
@@ -397,11 +408,11 @@ listOfFiles = getfiles(input_path, extension)
 dictOfFilesAndDetails = analysefiles(listOfFiles)
 
 # generate the file for Yed (Graphml file)
-for file, dictWithDetails in dictOfFilesAndDetails.items():
-    g = pyyed.Graph()
-    for what in ('yed_nodes', 'yed_hierarchy'): #, 'yed_edges'):
-            appendYedFile(what, dictOfFilesAndDetails)
-    g.write_graph(file+'.graphml', pretty_print=True)
+# for file, dictWithDetails in dictOfFilesAndDetails.items():
+#     g = pyyed.Graph()
+#     for what in ('yed_nodes', 'yed_hierarchy'): #, 'yed_edges'):
+#             appendYedFile(what, dictOfFilesAndDetails)
+#     g.write_graph(file+'.graphml', pretty_print=True)
 
 # generate the files for MAP
 appendMapFiles(dictOfFilesAndDetails)
