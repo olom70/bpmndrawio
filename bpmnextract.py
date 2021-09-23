@@ -85,8 +85,8 @@ my_parser.add_argument('FilesExt',
                        type=str,
                        help='the extensions of files to analyse')
 
-my_parser.add_argument('What',
-                       metavar='what',
+my_parser.add_argument('TypeOfOutput',
+                       metavar='typeofoutput',
                        type=int,
                        help='0 = MAP and Yed ; 1=MAP only; 2=Yed Only')
 
@@ -97,7 +97,7 @@ args = my_parser.parse_args()
 # Initialize program variables after the parameters
 extension = args.FilesExt
 input_path = args.Path
-generate = args.What
+generate = args.TypeOfOutput
 
 if not os.path.isdir(input_path):
     print('The path specified does not exist')
