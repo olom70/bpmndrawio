@@ -85,12 +85,19 @@ my_parser.add_argument('FilesExt',
                        type=str,
                        help='the extensions of files to analyse')
 
+my_parser.add_argument('What',
+                       metavar='what',
+                       type=int,
+                       help='0 = MAP and Yed ; 1=MAP only; 2=Yed Only')
+
+
 # Execute the parse_args() method
 args = my_parser.parse_args()
 
 # Initialize program variables after the parameters
 extension = args.FilesExt
 input_path = args.Path
+generate = args.What
 
 if not os.path.isdir(input_path):
     print('The path specified does not exist')
@@ -410,11 +417,13 @@ listOfFiles = getfiles(input_path, extension)
 dictOfFilesAndDetails = analysefiles(listOfFiles)
 
 # generate the file for Yed (Graphml file)
-# for file, dictWithDetails in dictOfFilesAndDetails.items():
-#     g = pyyed.Graph()
-#     for what in ('yed_nodes', 'yed_hierarchy'): #, 'yed_edges'):
-#             appendYedFile(what, dictOfFilesAndDetails)
-#     g.write_graph(file+'.graphml', pretty_print=True)
+if generate in [0,2]:
+    for file, dictWithDetails in dictOfFilesAndDetails.items():
+        g = pyyed.Graph()
+        for what in ('yed_nodes', 'yed_hierarchy'): #, 'yed_edges'):
+            appendYedFile(what, dictOfFilesAndDetails)
+        g.write_graph(file+'.graphml', pretty_print=True)
 
 # generate the files for MAP
-appendMapFiles(dictOfFilesAndDetails)
+if generate in [0,1]:
+    appendMapFiles(dictOfFilesAndDetails)
