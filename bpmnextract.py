@@ -109,8 +109,10 @@ listOfFiles = []
 dictOfFilesAndDetails = {}
 cleanr = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
 MACROBUSINESSPROCESS = 'MACRO_BUSINESS_PROCESS:'
+BUSINESSPROCESS = 'BUSINESS_PROCESS:'
 APPLICATION = 'APPLICATION:'
 MACROBUSINESSPROCESSTYPE  = 'MacroBusinessProcess'
+BUSINESSPROCESSTYPE  = 'BusinessProcess'
 APPLICATIONTYPE = 'Application'
 RELATION_SERVE = 'serves'
 
@@ -162,7 +164,7 @@ def parentIsaProcess(myfile, parentID):
             if (myfile == file and parentID == id): # as I am not sure that ID are UUID I want to make sure that I found the right parent in the right file
                 if cleanvalue is not None:
                     if (cleanvalue.lower()[0:9] == 'processus'):
-                        return [True, MACROBUSINESSPROCESS+generatedIdForMap]
+                        return [True, BUSINESSPROCESS+generatedIdForMap]
                         break
     return [False, None]
 
@@ -251,9 +253,9 @@ def appendMapFiles(dictionary):
                 label = cleanvalue
             if (inferedtype == 'swimlane' and label != ''):
                 if (label.lower()[0:9] == 'processus'):
-                    key = MACROBUSINESSPROCESS+generatedIdForMap
+                    key = BUSINESSPROCESS+generatedIdForMap
                     name = label
-                    type = MACROBUSINESSPROCESSTYPE
+                    type = BUSINESSPROCESSTYPE
                     businessID = generatedIdForMap
                     toWrite = initArtefact(key=key, name=name, type=type, businessID=businessID)
                 else: #it's an application
@@ -272,12 +274,12 @@ def appendMapFiles(dictionary):
                             outputfiles[3].writerow([APPLICATION+generatedIdForMap, parentGeneratedIdForMap, RELATION_SERVE])
                         else:
                             # create the artefact for a "default process" named after the name of the process in the last part of the filename
-                            defaultArtefactKey = MACROBUSINESSPROCESS+getProcessName(file)+parentId
+                            defaultArtefactKey = BUSINESSPROCESS+getProcessName(file)+parentId
                             if not(getProcessName(file) in listOfDefaultsProcess):
                                 listOfDefaultsProcess.append(getProcessName(file))
                                 key = defaultArtefactKey
                                 name = getProcessName(file)
-                                type = MACROBUSINESSPROCESSTYPE
+                                type = BUSINESSPROCESSTYPE
                                 businessID=getProcessName(file)+parentId
                                 toWrite= initArtefact(key=key, name=name, type=type, businessID=businessID)
                                 outputfiles[1].writerow(toWrite)
