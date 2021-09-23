@@ -225,6 +225,7 @@ def appendMapFiles(dictionary):
         - relations : relations between the artefacts
     '''
     listOfDefaultsProcess = []
+    listOfProcessedArtefacts = []
     # initialise the 2 files to import in MAP
     # outputfiles[0] = file for artefacts
     # outputfiles[1] = csv writer for artefacts
@@ -235,7 +236,6 @@ def appendMapFiles(dictionary):
     outputfiles[3].writerow(initRelationsHeader())
     # begin to fill up the files
     for file, dictWithDetails in dictionary.items():
-        ProcessName = file[file.rfind('-')+1:-(len(file)-(file.find('.')))]
         for id, listOfDetails in dictWithDetails.items():
             (inferedtype, generatedIdForMap, cleanvalue, parentId, style, source, target) = listOfDetails
             if (cleanvalue is None):
@@ -245,36 +245,38 @@ def appendMapFiles(dictionary):
             if (inferedtype == 'swimlane' and label != ''):
                 if (label.lower()[0:9] == 'processus'):
                     key = MACROBUSINESSPROCESS+generatedIdForMap
-                    name = cleanvalue
+                    name = label
                     type = MACROBUSINESSPROCESSTYPE
                     businessID = generatedIdForMap
                     toWrite = initArtefact(key=key, name=name, type=type, businessID=businessID)
                 else: #it's an application
                     key = APPLICATION+generatedIdForMap
-                    name = cleanvalue
+                    name = label
                     type = APPLICATIONTYPE
                     toWrite = initArtefact(key=key, name=name, type=type)
-                outputfiles[1].writerow(toWrite)
-                # find out if the parent is a processus and write the relation if its the case.
-                if parentId is not None:
-                    [relationtowrite, parentGeneratedIdForMap] = parentIsaProcess(file, parentId)
-                    # link the current application with the parent swimlane only if it's a valid processus
-                    if relationtowrite:
-                        outputfiles[3].writerow([APPLICATION+generatedIdForMap, parentGeneratedIdForMap, RELATION_SERVE])
-                    else:
-                        # create the artefact for a "default process" named after the name of the process in the last part of the filename
-                        defaultArtefactKey = MACROBUSINESSPROCESS+getProcessName(file)+parentId
-                        if not(getProcessName(file) in listOfDefaultsProcess):
-                            listOfDefaultsProcess.append(getProcessName(file))
-                            key = defaultArtefactKey
-                            name = getProcessName(file)
-                            type = MACROBUSINESSPROCESSTYPE
-                            businessID=getProcessName(file)+parentId
-                            toWrite= initArtefact(key=key, name=name, type=type, businessID=businessID)
-                            outputfiles[1].writerow(toWrite)
-                        # create the relation between the current application and the defaul process
-                        toWrite = initRelations(parentKey=APPLICATION+generatedIdForMap, childKey=defaultArtefactKey, relationType=RELATION_SERVE)
-                        outputfiles[3].writerow(toWrite)    
+                if (key not in listOfProcessedArtefacts and name != 'NoName'):
+                    listOfProcessedArtefacts.append(key)  # the artefact is created only once, so i avoid duplicates by controlling against prvious keys
+                    outputfiles[1].writerow(toWrite)
+                    # find out if the parent of the current application is a processus and write the relation if its the case.
+                    if (parentId is not None and label.lower()[0:9] != 'processus'):
+                        [relationtowrite, parentGeneratedIdForMap] = parentIsaProcess(file, parentId)
+                        # link the current application with the parent swimlane only if it's a valid processus
+                        if relationtowrite:
+                            outputfiles[3].writerow([APPLICATION+generatedIdForMap, parentGeneratedIdForMap, RELATION_SERVE])
+                        else:
+                            # create the artefact for a "default process" named after the name of the process in the last part of the filename
+                            defaultArtefactKey = MACROBUSINESSPROCESS+getProcessName(file)+parentId
+                            if not(getProcessName(file) in listOfDefaultsProcess):
+                                listOfDefaultsProcess.append(getProcessName(file))
+                                key = defaultArtefactKey
+                                name = getProcessName(file)
+                                type = MACROBUSINESSPROCESSTYPE
+                                businessID=getProcessName(file)+parentId
+                                toWrite= initArtefact(key=key, name=name, type=type, businessID=businessID)
+                                outputfiles[1].writerow(toWrite)
+                            # create the relation between the current application and the default process
+                            toWrite = initRelations(parentKey=APPLICATION+generatedIdForMap, childKey=defaultArtefactKey, relationType=RELATION_SERVE)
+                            outputfiles[3].writerow(toWrite)
     outputfiles[0].close()
     outputfiles[2].close()
 
@@ -368,7 +370,7 @@ def analysefiles(listOfFiles):
         listOfdetails = []
         processName = getProcessName(file) 
         with open(file, encoding='utf-8') as xmltoanalyse:
-            data = open(file).read()
+            data = xmltoanalyse.read()
             # is it an xml file ?
             if data[0:5] == '<?xml':
                 myroot = ET.fromstring(data)
