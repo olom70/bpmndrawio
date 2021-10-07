@@ -21,7 +21,8 @@ import sys
 import pylightxl as xl
 import lib.csvutil as csvutil
 import lib.stringutil as stringutil
-import lib.googleapi as googleapi 
+import lib.googleapi as googleapi
+from progress.bar import IncrementalBar
 
 # Part to use that script as a command line tool
 my_parser = argparse.ArgumentParser(description='extract data from Excel containing the Capabilities')
@@ -49,10 +50,14 @@ ABB = 'ARCHITECTURALBUILDINGBLOCK:'
 TYPE_ABB = 'ArchitecturalBuildingBlock'
 
 # 
-def writeABB(abb : str, outputfiles: list):
+def writeABB(abb : str, outputfiles: list, l_alreadyTranslated):
     key = ABB + stringutil.cleanName(abb, True, True, 'uppercase', False)
     nameEN = stringutil.cleanName(abb, False, False, 'noChange', False)
-    name = googleapi.translate_text('fr', nameEN)
+    if nameEN in l_alreadyTranslated[0]:
+        name = l_alreadyTranslated[0][nameEN]
+    else:
+        l_alreadyTranslated[0][nameEN] = nameEN
+        name = googleapi.translate_text('fr', nameEN)
     type = TYPE_ABB
     toWrite= csvutil.initArtefact(key=key, name=name, nameEN=nameEN, type=type)
     outputfiles[1].writerow(toWrite)
@@ -72,16 +77,20 @@ outputfiles[3].writerow(csvutil.initRelationsHeader())
 zones = db.ws(ws='ABB').col(col=1)
 quartiers = db.ws(ws='ABB').col(col=2)
 ilots = db.ws(ws='ABB').col(col=3)
-
+bar = IncrementalBar('Coutdown', max=len(zones)*5)
 # ecriture des artefacts & relations
-
+alreadyTranslated = {}
+l_alreadyTranslated = [alreadyTranslated]
 for items in zip(zones, quartiers, ilots):
     # traitement zone
-    writeABB(items[0], outputfiles)
+    writeABB(items[0], outputfiles, l_alreadyTranslated)
+    bar.next()
     # traitement quartier
-    writeABB(items[1], outputfiles)
+    writeABB(items[1], outputfiles, l_alreadyTranslated)
+    bar.next()
     # traitement ilot
-    writeABB(items[2], outputfiles)
+    writeABB(items[2], outputfiles, l_alreadyTranslated)
+    bar.next()
     # traitement des relations
     for i in [0, 1]:
         parentKey = ABB + stringutil.cleanName(items[i], True, True, 'uppercase', False)
@@ -89,6 +98,7 @@ for items in zip(zones, quartiers, ilots):
         relationType = RELATION_CONTAINS
         toWrite = csvutil.initRelations(parentKey=parentKey, childKey=childKey, relationType=relationType)
         outputfiles[3].writerow(toWrite)
+        bar.next()
 
 outputfiles[0].close()
 outputfiles[2].close()
