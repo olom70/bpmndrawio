@@ -13,7 +13,6 @@
 # - CSV file
 # - columns
 
-
 import argparse
 import os
 import re

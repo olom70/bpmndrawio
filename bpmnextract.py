@@ -1,5 +1,4 @@
 # analyse drawio files with BPMN content
-
 '''
 
 10) Open  all the files of a directory
