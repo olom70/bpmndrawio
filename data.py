@@ -21,6 +21,8 @@ import sys
 import pylightxl as xl
 import lib.csvutil as csvutil
 import lib.stringutil as stringutil
+import lib.googleapi as googleapi
+from progress.bar import IncrementalBar
 
 # Part to use that script as a command line tool
 my_parser = argparse.ArgumentParser(description='extract data from EDM Excel File')
@@ -48,28 +50,7 @@ BUSINESS_OBJECT = 'BUSINESS_OBJECT:'
 RELATION_CONTAINS = 'contains'
 TYPE_DATASPHERE = 'DataSphere'
 TYPE_BUSINESS_OBJECT = 'BusinessObject'
-RELATION_CONTAINS = 'contains'
-# 
 
-def translate_text(target, text):
-    """Translates text into the target language.
-
-    Target must be an ISO 639-1 language code.
-    See https://g.co/cloud/translate/v2/translate-reference#supported_languages
-    """
-    import six
-    from google.cloud import translate_v2 as translate
-
-    translate_client = translate.Client()
-
-    if isinstance(text, six.binary_type):
-        text = text.decode("utf-8")
-
-    # Text can also be a sequence of strings, in which case this method
-    # will return a sequence of results for each text.
-    return translate_client.translate(text, target_language=target)['translatedText']
-
-    
 
 #####################
 # main
@@ -90,6 +71,7 @@ businessObjectsNames = db.ws(ws='Business Object').col(col=2)
 businessObjectsDescriptions = db.ws(ws='Business Object').col(col=3)
 businessObjectsSpheres = db.ws(ws='Business Object').col(col=4)
 
+bar = IncrementalBar('Countdown', len(spheresNames+len(businessObjectsIDs*2)))
 # ecriture des artefacts data sphere
 
 for items in zip(spheresNames, spheresDescription):
@@ -97,10 +79,11 @@ for items in zip(spheresNames, spheresDescription):
     name = stringutil.cleanName(items[0], False, False, 'noChange')
     nameEN = name
     type = TYPE_DATASPHERE
-    description = translate_text('fr', stringutil.cleanName(items[1],False,False, 'noChange', True))
+    description = googleapi.translate_text('fr', stringutil.cleanName(items[1],False,False, 'noChange', True))
     descriptionEN = stringutil.cleanName(items[1],False,False, 'noChange', True)
     toWrite= csvutil.initArtefact(key=key, name=name, nameEN=nameEN, type=type, description=description, descriptionEN=descriptionEN)
     outputfiles[1].writerow(toWrite)
+    bar.next()
 
 #ecriture des Objets métiers (artefacts et relations)
 
@@ -110,10 +93,11 @@ for items in zip(businessObjectsIDs, businessObjectsNames, businessObjectsDescri
     name = stringutil.cleanName(items[1], False, False, 'noChange')
     nameEN = name
     type = TYPE_BUSINESS_OBJECT
-    description = translate_text('fr', stringutil.cleanName(items[2], False, False, 'noChange', True))
+    description = googleapi.translate_text('fr', stringutil.cleanName(items[2], False, False, 'noChange', True))
     descriptionEN = stringutil.cleanName(items[2],False,False, 'noChange', True)
     toWrite= csvutil.initArtefact(key=key, name=name, nameEN=nameEN, type=type, description=description, descriptionEN=descriptionEN)
     outputfiles[1].writerow(toWrite)
+    bar.next()
 
     #relations
     parentKey = DATA_SPHERE + stringutil.cleanName(items[3], True, True, 'uppercase')
@@ -121,6 +105,7 @@ for items in zip(businessObjectsIDs, businessObjectsNames, businessObjectsDescri
     relationType = RELATION_CONTAINS
     toWrite = csvutil.initRelations(parentKey=parentKey, childKey=childKey, relationType=relationType)
     outputfiles[3].writerow(toWrite)
+    bar.next()
 
 outputfiles[0].close()
 outputfiles[2].close()
