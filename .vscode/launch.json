@@ -5,11 +5,46 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python : Fichier actuel",
+            "name": "bpmn2018 - full scan",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "bpmnextract.py",
             "console": "integratedTerminal",
-            "args": ["C:/cartoXML/", "xml"]
+            "args": ["C:/cartoXML/", "xml", "0"]
+        },
+        {
+            "name": "bpmn2018 - test",
+            "type": "python",
+            "request": "launch",
+            "program": "bpmnextract.py",
+            "console": "integratedTerminal",
+            "args": ["C:/cartoXML/test/", "xml", "0"]
+        },
+        {
+            "name": "bpmn2018 - full MAP",
+            "type": "python",
+            "request": "launch",
+            "program": "bpmnextract.py",
+            "console": "integratedTerminal",
+            "args": ["C:/cartoXML/", "xml", "1"]
+        },
+        {
+            "name": "data sphere",
+            "type": "python",
+            "request": "launch",
+            "program": "data.py",
+            "console": "integratedTerminal",
+            "args": ["C:/work/EDL.xlsx"]
+        },
+        {
+            "name": "capabilities",
+            "type": "python",
+            "request": "launch",
+            "program": "capabilities.py",
+            "console": "integratedTerminal",
+            "args": ["C:/work/ABB.xlsx"]
         }
+
+
+
     ]

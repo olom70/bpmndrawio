@@ -77,7 +77,7 @@ outputfiles[3].writerow(csvutil.initRelationsHeader())
 zones = db.ws(ws='ABB').col(col=1)
 quartiers = db.ws(ws='ABB').col(col=2)
 ilots = db.ws(ws='ABB').col(col=3)
-bar = IncrementalBar('Coutdown', max=len(zones)*5)
+bar = IncrementalBar('Countdown', max=len(zones)*5)
 # ecriture des artefacts & relations
 alreadyTranslated = {}
 l_alreadyTranslated = [alreadyTranslated]
