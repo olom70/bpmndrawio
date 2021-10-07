@@ -70,8 +70,7 @@ businessObjectsIDs = db.ws(ws='Business Object').col(col=1)
 businessObjectsNames = db.ws(ws='Business Object').col(col=2)
 businessObjectsDescriptions = db.ws(ws='Business Object').col(col=3)
 businessObjectsSpheres = db.ws(ws='Business Object').col(col=4)
-
-bar = IncrementalBar('Countdown', len(spheresNames+len(businessObjectsIDs*2)))
+bar = IncrementalBar('Countdown', max=(len(spheresNames) + len(businessObjectsIDs)*2))
 # ecriture des artefacts data sphere
 
 for items in zip(spheresNames, spheresDescription):
@@ -79,8 +78,8 @@ for items in zip(spheresNames, spheresDescription):
     name = stringutil.cleanName(items[0], False, False, 'noChange')
     nameEN = name
     type = TYPE_DATASPHERE
-    description = googleapi.translate_text('fr', stringutil.cleanName(items[1],False,False, 'noChange', True))
     descriptionEN = stringutil.cleanName(items[1],False,False, 'noChange', True)
+    description = googleapi.translate_text('fr', descriptionEN)
     toWrite= csvutil.initArtefact(key=key, name=name, nameEN=nameEN, type=type, description=description, descriptionEN=descriptionEN)
     outputfiles[1].writerow(toWrite)
     bar.next()
@@ -93,8 +92,8 @@ for items in zip(businessObjectsIDs, businessObjectsNames, businessObjectsDescri
     name = stringutil.cleanName(items[1], False, False, 'noChange')
     nameEN = name
     type = TYPE_BUSINESS_OBJECT
-    description = googleapi.translate_text('fr', stringutil.cleanName(items[2], False, False, 'noChange', True))
     descriptionEN = stringutil.cleanName(items[2],False,False, 'noChange', True)
+    description = googleapi.translate_text('fr', descriptionEN)
     toWrite= csvutil.initArtefact(key=key, name=name, nameEN=nameEN, type=type, description=description, descriptionEN=descriptionEN)
     outputfiles[1].writerow(toWrite)
     bar.next()
