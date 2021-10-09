@@ -49,17 +49,17 @@ ABB = 'ARCHITECTURALBUILDINGBLOCK:'
 TYPE_ABB = 'ArchitecturalBuildingBlock'
 
 # 
-def writeABB(abb : str, outputfiles: list, l_alreadyTranslated):
-    key = ABB + stringutil.cleanName(abb, True, True, 'uppercase', False)
-    nameEN = stringutil.cleanName(abb, False, False, 'noChange', False)
-    if nameEN in l_alreadyTranslated[0]:
-        name = l_alreadyTranslated[0][nameEN]
-    else:
-        l_alreadyTranslated[0][nameEN] = nameEN
-        name = googleapi.translate_text('fr', nameEN)
-    type = TYPE_ABB
-    toWrite= csvutil.initArtefact(key=key, name=name, nameEN=nameEN, type=type)
-    outputfiles[1].writerow(toWrite)
+def writeABB(abb : str, outputfiles: list, l_alreadyAdded):
+    
+    if abb not in l_alreadyAdded[0]:
+        l_alreadyAdded[0].append(abb)
+        key = ABB + stringutil.cleanName(abb, True, True, 'uppercase', False)
+        nameEN = stringutil.cleanName(abb, False, False, 'noChange', False)
+        #name = googleapi.translate_text('fr', nameEN)
+        name = nameEN
+        type = TYPE_ABB
+        toWrite= csvutil.initArtefact(key=key, name=name, nameEN=nameEN, type=type)
+        outputfiles[1].writerow(toWrite)
   
 
 #####################
@@ -78,17 +78,17 @@ quartiers = db.ws(ws='ABB').col(col=2)
 ilots = db.ws(ws='ABB').col(col=3)
 bar = IncrementalBar('Countdown', max=len(zones)*5)
 # ecriture des artefacts & relations
-alreadyTranslated = {}
-l_alreadyTranslated = [alreadyTranslated]
+alreadyAdded = []
+l_alreadyAdded = [alreadyAdded]
 for items in zip(zones, quartiers, ilots):
     # traitement zone
-    writeABB(items[0], outputfiles, l_alreadyTranslated)
+    writeABB(items[0], outputfiles, l_alreadyAdded)
     bar.next()
     # traitement quartier
-    writeABB(items[1], outputfiles, l_alreadyTranslated)
+    writeABB(items[1], outputfiles, l_alreadyAdded)
     bar.next()
     # traitement ilot
-    writeABB(items[2], outputfiles, l_alreadyTranslated)
+    writeABB(items[2], outputfiles, l_alreadyAdded)
     bar.next()
     # traitement des relations
     for i in [0, 1]:
