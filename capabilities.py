@@ -55,8 +55,7 @@ def writeABB(abb : str, outputfiles: list, l_alreadyAdded):
         l_alreadyAdded[0].append(abb)
         key = ABB + stringutil.cleanName(abb, True, True, 'uppercase', False)
         nameEN = stringutil.cleanName(abb, False, False, 'noChange', False)
-        #name = googleapi.translate_text('fr', nameEN)
-        name = nameEN
+        name = googleapi.translate_text('fr', nameEN)
         type = TYPE_ABB
         toWrite= csvutil.initArtefact(key=key, name=name, nameEN=nameEN, type=type)
         outputfiles[1].writerow(toWrite)
