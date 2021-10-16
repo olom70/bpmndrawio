@@ -15,13 +15,13 @@
 
 import argparse
 import os
-import re
 import sys
 import pylightxl as xl
 import lib.csvutil as csvutil
 import lib.stringutil as stringutil
 import lib.googleapi as googleapi
 from progress.bar import IncrementalBar
+import time
 
 # Part to use that script as a command line tool
 my_parser = argparse.ArgumentParser(description='extract data from Excel containing the Capabilities')
@@ -39,7 +39,7 @@ args = my_parser.parse_args()
 excelFileName = args.ExcelFileName
 
 if not os.path.isfile(excelFileName):
-    print('The path specified does not exist')
+    print('The specified file does not exist')
     sys.exit()
 
 
@@ -67,7 +67,14 @@ def writeABB(abb : str, outputfiles: list, l_alreadyAdded):
 
 #init
 db = xl.readxl(fn=excelFileName)
-outputfiles = csvutil.createfiles(['ABBArtefacts.csv', 'ABBrelations.csv'])
+head, tail = os.path.split(excelFileName)
+if not os.path.isdir(head):
+    print('The specified path {head} does not exist'.format(head))
+    sys.exit()
+
+csvartefactsfile = head + os.path.sep + 'ABBArtefacts.csv' + str(time.time())
+csvrelationsfile = head + os.path.sep + 'ABBrelations.csv' + str(time.time())
+outputfiles = csvutil.createfiles([csvartefactsfile, csvrelationsfile])
 outputfiles[1].writerow(csvutil.initArtefactHeader())
 outputfiles[3].writerow(csvutil.initRelationsHeader())
 

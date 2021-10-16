@@ -43,6 +43,14 @@
             "program": "capabilities.py",
             "console": "integratedTerminal",
             "args": ["C:/work/ABB.xlsx"]
+        },
+        {
+            "name": "capabilities linux",
+            "type": "python",
+            "request": "launch",
+            "program": "capabilities.py",
+            "console": "integratedTerminal",
+            "args": ["/media/internaldiskmount/work/ABBshort.xlsx"]
         }
 
 
