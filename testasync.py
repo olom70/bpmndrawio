@@ -12,6 +12,7 @@ def merge_lists(results_from_fc):
     combined_list = []
     for li in results_from_fc:
         combined_list.extend(li)
+    return combined_list
 
 async def get_rhyming_words(session, word):
     url = f"https://api.datamuse.com/words?rel_rhy={word}&max=1000"

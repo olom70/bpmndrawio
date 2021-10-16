@@ -51,6 +51,13 @@
             "program": "capabilities.py",
             "console": "integratedTerminal",
             "args": ["/media/internaldiskmount/work/ABBshort.xlsx"]
+        },
+        {
+            "name": "Python : Fichier actuel",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
         }
 
 
