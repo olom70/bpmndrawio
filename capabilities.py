@@ -72,8 +72,8 @@ if not os.path.isdir(head):
     print('The specified path {head} does not exist'.format(head))
     sys.exit()
 
-csvartefactsfile = head + os.path.sep + 'ABBArtefacts.csv' + str(time.time())
-csvrelationsfile = head + os.path.sep + 'ABBrelations.csv' + str(time.time())
+csvartefactsfile = head + os.path.sep + 'ABBArtefacts_' + str(time.time()) + '.csv'
+csvrelationsfile = head + os.path.sep + 'ABBrelations_' + str(time.time()) + '.csv'
 outputfiles = csvutil.createfiles([csvartefactsfile, csvrelationsfile])
 outputfiles[1].writerow(csvutil.initArtefactHeader())
 outputfiles[3].writerow(csvutil.initRelationsHeader())
