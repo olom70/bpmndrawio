@@ -53,9 +53,9 @@ def writeABB(abb : str, outputfiles: list, l_alreadyAdded):
     
     if abb not in l_alreadyAdded[0]:
         l_alreadyAdded[0].append(abb)
-        key = ABB + stringutil.cleanName(abb, True, True, 'uppercase', False)
-        nameEN = stringutil.cleanName(abb, False, False, 'noChange', False)
-        name = googleapi.translate_text('fr', nameEN)
+        key = ABB + stringutil.cleanName(abb, False, True, 'uppercase', False, True, True)
+        nameEN = stringutil.cleanName(abb, False, False, 'noChange', False, True, True)
+        name = stringutil.cleanName(googleapi.translate_text('fr', nameEN), False, False, 'noChange', True, False, True)
         type = TYPE_ABB
         toWrite= csvutil.initArtefact(key=key, name=name, nameEN=nameEN, type=type)
         outputfiles[1].writerow(toWrite)
@@ -98,8 +98,8 @@ for items in zip(zones, quartiers, ilots):
     bar.next()
     # traitement des relations
     for i in [0, 1]:
-        parentKey = ABB + stringutil.cleanName(items[i], True, True, 'uppercase', False)
-        childKey = ABB + stringutil.cleanName(items[i+1], True, True, 'uppercase', False)
+        parentKey = ABB + stringutil.cleanName(items[i], False, True, 'uppercase', False, True, True)
+        childKey = ABB + stringutil.cleanName(items[i+1], False, True, 'uppercase', False, True, True)
         relationType = RELATION_CONTAINS
         toWrite = csvutil.initRelations(parentKey=parentKey, childKey=childKey, relationType=relationType)
         outputfiles[3].writerow(toWrite)

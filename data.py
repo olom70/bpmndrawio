@@ -73,12 +73,12 @@ bar = IncrementalBar('Countdown', max=(len(spheresNames) + len(businessObjectsID
 # ecriture des artefacts data sphere
 
 for items in zip(spheresNames, spheresDescription):
-    key = DATA_SPHERE + stringutil.cleanName(items[0], True, True, 'uppercase')
-    name = stringutil.cleanName(items[0], False, False, 'noChange')
+    key = DATA_SPHERE + stringutil.cleanName(items[0], False, True, 'uppercase', True, True, True)
+    name = stringutil.cleanName(items[0], False, False, 'noChange', True, True, True)
     nameEN = name
     type = TYPE_DATASPHERE
-    descriptionEN = stringutil.cleanName(items[1],False,False, 'noChange', True)
-    description = googleapi.translate_text('fr', descriptionEN)
+    descriptionEN = stringutil.cleanName(items[1],False,False, 'noChange', True, False, True)
+    description = stringutil.cleanName(googleapi.translate_text('fr', descriptionEN), False, False, 'noChange', True, False, True)
     toWrite= csvutil.initArtefact(key=key, name=name, nameEN=nameEN, type=type, description=description, descriptionEN=descriptionEN)
     outputfiles[1].writerow(toWrite)
     bar.next()
@@ -87,18 +87,18 @@ for items in zip(spheresNames, spheresDescription):
 
 for items in zip(businessObjectsIDs, businessObjectsNames, businessObjectsDescriptions, businessObjectsSpheres):
     #artefacts
-    key = BUSINESS_OBJECT + stringutil.cleanName(items[1], True, True, 'uppercase')
-    name = stringutil.cleanName(items[1], False, False, 'noChange')
+    key = BUSINESS_OBJECT + stringutil.cleanName(items[1], False, True, 'uppercase', False, True, True)
+    name = stringutil.cleanName(items[1], False, False, 'noChange', True, True, True)
     nameEN = name
     type = TYPE_BUSINESS_OBJECT
-    descriptionEN = stringutil.cleanName(items[2],False,False, 'noChange', True)
-    description = googleapi.translate_text('fr', descriptionEN)
+    descriptionEN = stringutil.cleanName(items[2],False,False, 'noChange', True, False, True)
+    description = stringutil.cleanName(googleapi.translate_text('fr', descriptionEN), False, False, 'noChange', True, False, True)
     toWrite= csvutil.initArtefact(key=key, name=name, nameEN=nameEN, type=type, description=description, descriptionEN=descriptionEN)
     outputfiles[1].writerow(toWrite)
     bar.next()
 
     #relations
-    parentKey = DATA_SPHERE + stringutil.cleanName(items[3], True, True, 'uppercase')
+    parentKey = DATA_SPHERE + stringutil.cleanName(items[3], False, True, 'uppercase', True, True, True)
     childKey = key
     relationType = RELATION_CONTAINS
     toWrite = csvutil.initRelations(parentKey=parentKey, childKey=childKey, relationType=relationType)

@@ -2,24 +2,28 @@ import re
 
 cleanr = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
 
-def cleanName(value: str, trimSpace=False, removeDiacritic=False, changeCase=['uppercase', 'lowercase', 'noChange'], removeCR=False):
+def cleanName(value: str, trimSpace=False, removeDiacritic=False, changeCase=['uppercase', 'lowercase', 'noChange'], removeCR=False, removeSpecialCharacters=False, removeHTMLTags=False):
     '''
         remove specials characters, html elements.
         also remove spaces and diacritics if asked to do
     '''
-    diacritics = {'à': 'a', 'â': 'a', 'é': 'e', 'è': 'e', 'ê': 'e', 'ë': 'e', 'ç': 'c', 'ô': 'o', 'ö': 'o', 'ù': 'u'}
-    def rd(v):
+    def rd(v, toRemove=['diacritics', 'specialCharacters']):
+        diacritics = {'à': 'a', 'â': 'a', 'é': 'e', 'è': 'e', 'ê': 'e', 'ë': 'e', 'ç': 'c', 'ô': 'o', 'ö': 'o', 'ù': 'u'}
+        specialCharacters = {'%': ' ', '"': ' ', "<": ' ', ">": ' ', "&": '', "\\": ' ', "/": ' ', "'": ' '}
+        if (toRemove == 'diacritics'): charactersToRemove = diacritics
+        if (toRemove == 'specialCharacters'): charactersToRemove = specialCharacters 
         cleanstr = ''
         for i, char in enumerate(v):
-            if char in diacritics:
-                cleanstr = cleanstr + diacritics[char] 
+            if char in charactersToRemove:
+                cleanstr = cleanstr + charactersToRemove[char] 
             else:
                 cleanstr = cleanstr + v[i] 
         return cleanstr
 
-    if trimSpace: c = re.sub(cleanr,'', value).replace(" ", "")
-    if not trimSpace: c = re.sub(cleanr,'', value)
-    if removeDiacritic: c = rd(c)    
+    if trimSpace: c = value.replace(" ", "")
+    if removeHTMLTags: c = re.sub(cleanr,'', value)
+    if removeDiacritic: c = rd(c, 'diacritics')    
+    if removeSpecialCharacters: c=rd(c, 'specialCharacters')
     if changeCase == 'uppercase': c = c.upper()
     if changeCase == 'lowercase': c = c.lower()
     if removeCR: 
