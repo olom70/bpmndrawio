@@ -58,6 +58,22 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "capabilities testfile",
+            "type": "python",
+            "request": "launch",
+            "program": "capabilities.py",
+            "console": "integratedTerminal",
+            "args": ["C:/work/ABBshort.xlsx"]
+        },
+        {
+            "name": "data sphere short",
+            "type": "python",
+            "request": "launch",
+            "program": "data.py",
+            "console": "integratedTerminal",
+            "args": ["C:/work/EDLshort.xlsx"]
         }
 
 
