@@ -44,8 +44,8 @@ if not os.path.isfile(excelFileName):
 
 
 # Constants
-DATA_SPHERE = 'DATA_SPHERE:'
-BUSINESS_OBJECT = 'BUSINESS_OBJECT:'
+DATA_SPHERE = 'DATASPHERE:'
+BUSINESS_OBJECT = 'BUSINESSOBJECT:'
 RELATION_CONTAINS = 'contains'
 TYPE_DATASPHERE = 'DataSphere'
 TYPE_BUSINESS_OBJECT = 'BusinessObject'
@@ -56,8 +56,17 @@ TYPE_BUSINESS_OBJECT = 'BusinessObject'
 #####################
 
 #init
+head, tail = os.path.split(excelFileName)
+if not os.path.isdir(head):
+    print('The specified path {head} does not exist'.format(head))
+    sys.exit()
+
+csvartefactsfile = head + os.path.sep + 'BOArtefacts_' + str(time.time()) + '.csv'
+csvrelationsfile = head + os.path.sep + 'BOrelations_' + str(time.time()) + '.csv'
+
+
 db = xl.readxl(fn=excelFileName)
-outputfiles = csvutil.createfiles(['BOArtefacts.csv', 'BOrelations.csv'])
+outputfiles = csvutil.createfiles([csvartefactsfile, csvrelationsfile])
 outputfiles[1].writerow(csvutil.initArtefactHeader())
 outputfiles[3].writerow(csvutil.initRelationsHeader())
 
@@ -74,8 +83,8 @@ bar = IncrementalBar('Countdown', max=(len(spheresNames) + len(businessObjectsID
 
 for items in zip(spheresNames, spheresDescription):
     key = DATA_SPHERE + stringutil.cleanName(items[0], False, True, 'uppercase', True, True, True)
-    name = stringutil.cleanName(items[0], False, False, 'noChange', True, True, True)
-    nameEN = name
+    nameEN = stringutil.cleanName(items[0], False, False, 'noChange', True, True, True)
+    name = stringutil.cleanName(googleapi.translate_text('fr', nameEN), False, True, 'noChange', True, True, True)
     type = TYPE_DATASPHERE
     descriptionEN = stringutil.cleanName(items[1],False,False, 'noChange', True, False, True)
     description = stringutil.cleanName(googleapi.translate_text('fr', descriptionEN), False, False, 'noChange', True, False, True)
@@ -88,8 +97,8 @@ for items in zip(spheresNames, spheresDescription):
 for items in zip(businessObjectsIDs, businessObjectsNames, businessObjectsDescriptions, businessObjectsSpheres):
     #artefacts
     key = BUSINESS_OBJECT + stringutil.cleanName(items[1], False, True, 'uppercase', False, True, True)
-    name = stringutil.cleanName(items[1], False, False, 'noChange', True, True, True)
-    nameEN = name
+    nameEN = stringutil.cleanName(items[1], False, False, 'noChange', True, True, True)
+    name = stringutil.cleanName(googleapi.translate_text('fr', nameEN), False, True, 'noChange', True, True, True)
     type = TYPE_BUSINESS_OBJECT
     descriptionEN = stringutil.cleanName(items[2],False,False, 'noChange', True, False, True)
     description = stringutil.cleanName(googleapi.translate_text('fr', descriptionEN), False, False, 'noChange', True, False, True)

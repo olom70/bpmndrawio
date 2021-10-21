@@ -64,12 +64,12 @@ import os
 import sys
 import glob
 import argparse
-import re
 import xml.etree.ElementTree as ET
 import pyyed
-import filecmp
-import csv
 import uuid
+import lib.csvutil as csvutil
+import lib.stringutil as stringutil
+import time
 # Create the parser
 my_parser = argparse.ArgumentParser(description='analyse drawio files with BPMN content')
 
@@ -106,7 +106,6 @@ if not os.path.isdir(input_path):
 ####### Global SCope Variables ##############
 listOfFiles = []
 dictOfFilesAndDetails = {}
-cleanr = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
 MACROBUSINESSPROCESS = 'MACRO_BUSINESS_PROCESS:'
 BUSINESSPROCESS = 'BUSINESS_PROCESS:'
 APPLICATION = 'APPLICATION:'
@@ -117,20 +116,6 @@ RELATION_SERVE = 'serves'
 
 
 #################### Functions ##################
-def createfiles(l):
-    '''
-        create the files for MAP import
-        input : a list of filename to create
-        output : for each input file : a file named after the input, and a csv.writer to put content in it
-    '''
-    r = []
-    for v in l:
-        csvfile = open(v, 'w+', newline='', encoding="utf-8")
-        writer = csv.writer(csvfile, delimiter=';',
-                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        r += [csvfile, writer]
-    return r
-
 def getProcessName(fullName):
     '''
         get just the name of the file without the path nor the extension and spaces
@@ -167,64 +152,6 @@ def parentIsaProcess(myfile, parentID):
                         break
     return [False, None]
 
-def initArtefact(**kwargs):
-    '''
-        initialise the row that is about to be written in a file containing the artefacts to import in MAP
-    '''
-    key = ''
-    name = ''
-    type = ''
-    businessID = ''
-    ordernumber = ''
-    description = ''
-    serviceLevelAgreement = ''
-    frequency = ''
-    activityType = ''
-    periodicity = ''
-    platform = ''
-    contractScope = ''
-
-    for k, v in kwargs.items():
-        if k == 'key': key = v
-        if k == 'name' : name = v 
-        if k == 'type' : type = v
-        if k == 'businessID' : businessID = v
-        if k == 'ordernumber' : ordernumber = v
-        if k == 'description' : description = v
-        if k == 'serviceLevelAgreement' : serviceLevelAgreement = v
-        if k == 'frequency' : frequency = v
-        if k == 'activityType' : activityType = v
-        if k == 'periodicity' : periodicity = v
-        if k == 'platform' : platform = v
-        if k == 'contractScope' : contractScope = v
-    return [key, name, type, businessID, ordernumber, description, serviceLevelAgreement, frequency, activityType, periodicity, platform, contractScope]
-
-def initArtefactHeader():
-    '''
-        Initialise the first row of the artefact file : the header
-    '''
-    return initArtefact(key='key', name = 'name', type='type', businessID='businessID', ordernumber='ordernumber', description='description', serviceLevelAgreement='serviceLevelAgreement', frequency='frequency', activityType='activityType', periodicity='periodicity', platform='platform', contractScope='contractScope')
-
-def initRelations(**kwargs):
-    '''
-        initialise the row that is about to be written in a file containing the relations to import in MAP
-    '''
-    parentKey = ''
-    childKey = ''
-    relationType = ''
-    metaX = ''
-    for k, v in kwargs.items():
-        if k == 'parentKey': parentKey = v
-        if k == 'childKey': childKey = v
-        if k == 'relationType': relationType = v
-        if k == 'metaX': metaX = v
-    return [parentKey, childKey, relationType, metaX]
-
-def initRelationsHeader():
-    '''
-        Initialise the first row of the relation file : the header
-    '''
-    return initRelations(parentKey='parentKey', childKey='childKey', relationType='relationType', metaX='metaX')
 
 def appendMapFiles(dictionary):
     '''
@@ -239,9 +166,16 @@ def appendMapFiles(dictionary):
     # outputfiles[1] = csv writer for artefacts
     # outputfiles[2] = file for relations
     # outputfiles[3] = csv writer for relations
-    outputfiles = createfiles(['artefacts.csv', 'relations.csv'])
-    outputfiles[1].writerow(initArtefactHeader())
-    outputfiles[3].writerow(initRelationsHeader())
+    head, tail = os.path.split(input_path)
+    if not os.path.isdir(head):
+        print('The specified path {head} does not exist'.format(head))
+        sys.exit()
+
+    csvartefactsfile = head + os.path.sep + 'BPMN2018Artefacts_' + str(time.time()) + '.csv'
+    csvrelationsfile = head + os.path.sep + 'BPMN2018relations_' + str(time.time()) + '.csv'
+    outputfiles = csvutil.createfiles([csvartefactsfile, csvrelationsfile])
+    outputfiles[1].writerow(csvutil.initArtefactHeader())
+    outputfiles[3].writerow(csvutil.initRelationsHeader())
     # begin to fill up the files
     for file, dictWithDetails in dictionary.items():
         for id, listOfDetails in dictWithDetails.items():
@@ -256,12 +190,12 @@ def appendMapFiles(dictionary):
                     name = label
                     type = BUSINESSPROCESSTYPE
                     businessID = generatedIdForMap
-                    toWrite = initArtefact(key=key, name=name, type=type, businessID=businessID)
+                    toWrite = csvutil.initArtefact(key=key, name=name, type=type, businessID=businessID)
                 else: #it's an application
                     key = APPLICATION+generatedIdForMap
                     name = label
                     type = APPLICATIONTYPE
-                    toWrite = initArtefact(key=key, name=name, type=type)
+                    toWrite = csvutil.initArtefact(key=key, name=name, type=type)
                 if (key not in listOfProcessedArtefacts and name != 'NoName'):
                     listOfProcessedArtefacts.append(key)  # the artefact is created only once, so i avoid duplicates by controlling against prvious keys
                     outputfiles[1].writerow(toWrite)
@@ -280,10 +214,10 @@ def appendMapFiles(dictionary):
                                 name = getProcessName(file)
                                 type = BUSINESSPROCESSTYPE
                                 businessID=getProcessName(file)+parentId
-                                toWrite= initArtefact(key=key, name=name, type=type, businessID=businessID)
+                                toWrite= csvutil.initArtefact(key=key, name=name, type=type, businessID=businessID)
                                 outputfiles[1].writerow(toWrite)
                             # create the relation between the current application and the default process
-                            toWrite = initRelations(parentKey=APPLICATION+generatedIdForMap, childKey=defaultArtefactKey, relationType=RELATION_SERVE)
+                            toWrite = csvutil.initRelations(parentKey=APPLICATION+generatedIdForMap, childKey=defaultArtefactKey, relationType=RELATION_SERVE)
                             outputfiles[3].writerow(toWrite)
     outputfiles[0].close()
     outputfiles[2].close()
@@ -352,16 +286,6 @@ def getInferedType(style, has_a_source):
     else:
         return 'generic'
 
-def cleanName(value, trimSpace=False):
-    '''
-        remove specials characters, html elements.
-        also remove spaces if asked to do
-    '''
-    if trimSpace: c = re.sub(cleanr,'', value).replace(" ", "")
-    if not trimSpace: c = re.sub(cleanr,'', value)
-    if len(c) == 0: c = 'NoName'
-    return c
-
 def analysefiles(listOfFiles):
     '''
         parse the input list.
@@ -395,9 +319,9 @@ def analysefiles(listOfFiles):
                         styleToExamine = mxCell.attrib['style'].split(';')[0]
                         ha = has_attribute(mxCell.attrib, 'source')  
                         inferedtype = getInferedType(styleToExamine, ha)
-                    if ('id' in mxCell.attrib and 'value' in mxCell.attrib): generatedIdForMap = cleanName(mxCell.attrib['value'], True)
+                    if ('id' in mxCell.attrib and 'value' in mxCell.attrib): generatedIdForMap = stringutil.cleanName(mxCell.attrib['value'], False, True, 'uppercase', True, True, True)
                     if ('id' in mxCell.attrib and 'value' not in mxCell.attrib): generatedIdForMap = mxCell.attrib['id']
-                    if 'value' in mxCell.attrib: cleanvalue = cleanName(mxCell.attrib['value'], False)
+                    if 'value' in mxCell.attrib: cleanvalue = stringutil.cleanName(mxCell.attrib['value'], False, False, 'noChange', True, False, True)
                     if 'parent' in mxCell.attrib: parentId = mxCell.attrib['parent']
                     if 'style' in mxCell.attrib: style = mxCell.attrib['style']
                     if 'source' in mxCell.attrib: source = mxCell.attrib['source']

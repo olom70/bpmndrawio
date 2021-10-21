@@ -1,6 +1,5 @@
 # useful functions written while manipulating files
 import csv
-import re
 
 def createfiles(l):
     '''
