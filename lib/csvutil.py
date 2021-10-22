@@ -1,7 +1,9 @@
 # useful functions written while manipulating files
 import csv
+import time
+import os
 
-def createfiles(l):
+def createfiles(head: str, l: list()) -> list():
     '''
         create the files for MAP import
         input : a list of filename to create
@@ -9,7 +11,8 @@ def createfiles(l):
     '''
     r = []
     for v in l:
-        csvfile = open(v, 'w+', newline='', encoding="utf-8")
+        filename = head + os.path.sep + v + '-' + str(time.time()) + '.csv'
+        csvfile = open(filename, 'w+', newline='', encoding="utf-8")
         writer = csv.writer(csvfile, delimiter=';',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
         r += [csvfile, writer]

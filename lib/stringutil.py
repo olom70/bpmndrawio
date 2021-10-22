@@ -32,10 +32,11 @@ def cleanName(value: str, trimSpace=False, removeDiacritic=False, changeCase=['u
     if len(c) == 0: c = 'NoName'
     return c
 
-def getNameLastPart(fullName : str, separator=None, trimSpace=False ):
+def getNameLastPart(fullName : str, separator=' ', trimSpace=False ):
     '''
-        get just the name of the file without the path nor the extension and spaces and after a specified character
+        If a string is made up several parts separated by a character(s), this function get the last part to the right
     '''
-    #trimmedFilename = file[file.rfind(os.path.sep)+1:-(len(file)-(file.rfind('.')))].replace(" ", "")
-    if (separator is None):
-        return fullName[fullName.rfind('-')+1:-(len(fullName)-(fullName.find('.')))].replace(" ", "") 
+    if trimSpace:
+        return fullName[fullName.rfind(separator)+1:-(len(fullName)-(fullName.find('.')))].replace(" ", "") 
+    else:
+        return fullName[fullName.rfind(separator)+1:-(len(fullName)-(fullName.find('.')))] 

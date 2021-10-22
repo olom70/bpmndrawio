@@ -74,6 +74,30 @@
             "program": "data.py",
             "console": "integratedTerminal",
             "args": ["C:/work/EDLshort.xlsx"]
+        },
+        {
+            "name": "map import bpmn test",
+            "type": "python",
+            "request": "launch",
+            "program": "map_import.py",
+            "console": "integratedTerminal",
+            "args": ["bpmn", "/media/internaldiskmount/cartoXML/test/", "xml", "0"]
+        },
+        {
+            "name": "map import bo test",
+            "type": "python",
+            "request": "launch",
+            "program": "map_import.py",
+            "console": "integratedTerminal",
+            "args": ["bo", "/media/internaldiskmount/work/EDLshort.xlsx", "N"]
+        },
+        {
+            "name": "map import capabilities test",
+            "type": "python",
+            "request": "launch",
+            "program": "map_import.py",
+            "console": "integratedTerminal",
+            "args": ["capabilities", "/media/internaldiskmount/work/ABBshort.xlsx", "N"]
         }
 
 
